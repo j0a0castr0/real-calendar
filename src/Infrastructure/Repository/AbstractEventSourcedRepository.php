@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Infrastrucutre\Repository;
+namespace App\Infrastructure\Repository;
 
 use App\Domain\AggregateRoot;
-use App\Infrastrucutre\EventStore\EventStore;
+use App\Infrastructure\EventStore\EventStore;
 
 abstract class AbstractEventSourcedRepository
 {

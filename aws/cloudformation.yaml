@@ -1,0 +1,226 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Production-ready ECS Fargate + real-calendar API + RDS
+
+Parameters:
+    VpcCidr:
+        Type: String
+        Default: 10.0.0.0/16
+    PublicSubnetCidr:
+        Type: String
+        Default: 10.0.1.0/24
+    PrivateSubnetCidr:
+        Type: String
+        Default: 10.0.2.0/24
+    DBUsername:
+        Type: String
+        Default: realcalendar
+    DBPassword:
+        Type: String
+        NoEcho: true
+    ImageTag:
+        Type: String
+        Default: latest
+
+Resources:
+
+    ###################
+    # VPC & Subnets
+    ###################
+    VPC:
+        Type: AWS::EC2::VPC
+        Properties:
+            CidrBlock: !Ref VpcCidr
+            EnableDnsSupport: true
+            EnableDnsHostnames: true
+            Tags:
+                - Key: Name
+                  Value: real-calendar-api-vpc
+
+    InternetGateway:
+        Type: AWS::EC2::InternetGateway
+
+    VPCGatewayAttachment:
+        Type: AWS::EC2::VPCGatewayAttachment
+        Properties:
+            VpcId: !Ref VPC
+            InternetGatewayId: !Ref InternetGateway
+
+    PublicSubnet:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            CidrBlock: !Ref PublicSubnetCidr
+            MapPublicIpOnLaunch: true
+            AvailabilityZone: !Select [0, !GetAZs '']
+
+    PrivateSubnetA:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            CidrBlock: 10.0.2.0/24
+            AvailabilityZone: !Select [ 0, !GetAZs '' ]
+
+    PrivateSubnetB:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            CidrBlock: 10.0.3.0/24
+            AvailabilityZone: !Select [ 1, !GetAZs '' ]
+
+    PublicRouteTable:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId: !Ref VPC
+
+    PublicRoute:
+        Type: AWS::EC2::Route
+        Properties:
+            RouteTableId: !Ref PublicRouteTable
+            DestinationCidrBlock: 0.0.0.0/0
+            GatewayId: !Ref InternetGateway
+
+    PublicSubnetRouteTableAssociation:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId: !Ref PublicSubnet
+            RouteTableId: !Ref PublicRouteTable
+
+    ###################
+    # Security Groups
+    ###################
+    ECSServiceSG:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription: ECS Service SG
+            VpcId: !Ref VPC
+            SecurityGroupIngress:
+                - IpProtocol: tcp
+                  FromPort: 80
+                  ToPort: 80
+                  CidrIp: 0.0.0.0/0
+
+    RdsSG:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription: RDS SG
+            VpcId: !Ref VPC
+            SecurityGroupIngress:
+                - IpProtocol: tcp
+                  FromPort: 5432
+                  ToPort: 5432
+                  SourceSecurityGroupId: !Ref ECSServiceSG
+
+    ###################
+    # RDS PostgreSQL
+    ###################
+    PostgresDB:
+        Type: AWS::RDS::DBInstance
+        DeletionPolicy: Retain
+        UpdateReplacePolicy: Retain
+        Properties:
+            Engine: postgres
+            DBName: realcalendardb
+            DBInstanceClass: db.t3.micro
+            AllocatedStorage: 20
+            MasterUsername: !Ref DBUsername
+            MasterUserPassword: !Ref DBPassword
+            VPCSecurityGroups: [!Ref RdsSG]
+            DBSubnetGroupName: !Ref DBSubnetGroup
+            MultiAZ: false
+            PubliclyAccessible: false
+            StorageType: gp3
+            DeletionProtection: true
+
+    DBSubnetGroup:
+        Type: AWS::RDS::DBSubnetGroup
+        Properties:
+            DBSubnetGroupDescription: Private subnets for RDS
+            SubnetIds:
+                - !Ref PrivateSubnetA
+                - !Ref PrivateSubnetB
+
+    ###################
+    # ECR Repository
+    ###################
+    ECRRepo:
+        Type: AWS::ECR::Repository
+
+    ###################
+    # ECS Cluster
+    ###################
+    ECSCluster:
+        Type: AWS::ECS::Cluster
+
+    ###################
+    # ECS Task Execution Role
+    ###################
+    ECSExecutionRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: Allow
+                      Principal:
+                          Service:
+                              - ecs-tasks.amazonaws.com
+                      Action: sts:AssumeRole
+            ManagedPolicyArns:
+                - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+    ###################
+    # ECS Task Definition
+    ###################
+    ECSTaskDefinition:
+        Type: AWS::ECS::TaskDefinition
+        Properties:
+            Family: real-calendar-api
+            Cpu: "512"
+            Memory: "1024"
+            NetworkMode: awsvpc
+            RequiresCompatibilities: ["FARGATE"]
+            ExecutionRoleArn: !GetAtt ECSExecutionRole.Arn
+            ContainerDefinitions:
+                - Name: real-calendar-api
+                  Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/real-calendar-api:${ImageTag}"
+                  PortMappings:
+                      - ContainerPort: 80
+                  Environment:
+                      - Name: APP_ENV
+                        Value: prod
+                      - Name: APP_DEBUG
+                        Value: "0"
+                      - Name: DATABASE_URL
+                        Value: !Sub
+                            - "pgsql://${DBUsername}:${DBPassword}@${DBHost}:5432/realcalendardb"
+                            -  DBHost: !GetAtt PostgresDB.Endpoint.Address
+                  LogConfiguration:
+                      LogDriver: awslogs
+                      Options:
+                          awslogs-group: "/ecs/real-calendar-api"
+                          awslogs-region: !Ref "AWS::Region"
+                          awslogs-stream-prefix: "ecs"
+
+    ECSLogGroup:
+        Type: AWS::Logs::LogGroup
+        Properties:
+            LogGroupName: /ecs/real-calendar-api
+            RetentionInDays: 14
+
+    ###################
+    # ECS Service
+    ###################
+    ECSService:
+        Type: AWS::ECS::Service
+        Properties:
+            Cluster: !Ref ECSCluster
+            DesiredCount: 1
+            LaunchType: FARGATE
+            TaskDefinition: !Ref ECSTaskDefinition
+            NetworkConfiguration:
+                AwsvpcConfiguration:
+                    AssignPublicIp: ENABLED
+                    Subnets:
+                        - !Ref PublicSubnet
+                    SecurityGroups:
+                        - !Ref ECSServiceSG

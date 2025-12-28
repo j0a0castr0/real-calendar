@@ -5,10 +5,12 @@ namespace App\Tests\Domain;
 use App\Domain\Listing\AvailabiltyWasSet;
 use App\Domain\Listing\Listing;
 use App\Domain\Listing\ListingWasCreated;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
+#[Group("domain")]
 class ListingTest extends TestCase
 {
     #[Test]

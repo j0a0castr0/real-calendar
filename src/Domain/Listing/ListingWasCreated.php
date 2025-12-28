@@ -9,7 +9,7 @@ final class ListingWasCreated extends AbstractDomainEvent
     public function payload(): array
     {
         return [
-            'aggregateId' => $this->aggregateId()
+
         ];
     }
 }

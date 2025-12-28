@@ -4,18 +4,25 @@ namespace App\Domain;
 
 abstract class AggregateRoot
 {
-    protected string $id;
+    protected AggregateId $id;
 
     /** @var DomainEvent[] */
     private array $recordedEvents = [];
 
-    public function id(): string
+    protected int $version = 0;
+
+    public function id(): AggregateId
     {
         return $this->id;
     }
 
+    public function version(): int
+    {
+        return $this->version;
+    }
+
     /** Reconstitution from history */
-    public static function reconstitute(string $id, iterable $events): static
+    public static function reconstitute(AggregateId $id, iterable $events): static
     {
         $instance = new static();
         $instance->id = $id;
@@ -61,5 +68,6 @@ abstract class AggregateRoot
         }
 
         $this->$method($event);
+        $this->version++;
     }
 }

@@ -4,16 +4,16 @@ namespace App\Domain;
 
 abstract class AbstractDomainEvent implements DomainEvent
 {
-    protected string $aggregateId;
+    protected AggregateId $aggregateId;
     protected \DateTimeImmutable $occurredAt;
 
-    public function __construct(string $aggregateId)
+    public function __construct(AggregateId $aggregateId)
     {
         $this->aggregateId = $aggregateId;
         $this->occurredAt = new \DateTimeImmutable();
     }
 
-    public function aggregateId(): string
+    public function aggregateId(): AggregateId
     {
         return $this->aggregateId;
     }

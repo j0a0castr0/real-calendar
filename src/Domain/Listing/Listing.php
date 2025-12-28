@@ -3,15 +3,16 @@
 namespace App\Domain\Listing;
 
 use App\Domain\AggregateRoot;
+use App\Domain\AggregateId;
 use Ramsey\Uuid\UuidInterface;
 
 final class Listing extends AggregateRoot
 {
-    public static function create(UuidInterface $id) : self
+    public static function create(?AggregateId $id = null) : self
     {
         $listing = new self();
 
-        $listing->raise(new ListingWasCreated($id));
+        $listing->raise(new ListingWasCreated($id ?? new AggregateId()));
 
         return $listing;
     }

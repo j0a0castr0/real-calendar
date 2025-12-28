@@ -17,7 +17,7 @@ final class AvailabiltyWasSet extends AbstractDomainEvent
     {
         return $this->to;
     }
-    private \DateTimeImmutable $to;
+
 
     public function __construct(\DateTimeImmutable $from, \DateTimeImmutable $to)
     {
@@ -28,7 +28,7 @@ final class AvailabiltyWasSet extends AbstractDomainEvent
     public function payload(): array
     {
         return [
-            'aggregateId' => $this->aggregateId(),
+            'aggregateId' => (string) $this->aggregateId(),
             'from' => $this->from->format(\DateTimeImmutable::ATOM),
             'to' => $this->to->format(\DateTimeImmutable::ATOM)
         ];

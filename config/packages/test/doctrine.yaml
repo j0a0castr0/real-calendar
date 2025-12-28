@@ -1,0 +1,22 @@
+doctrine:
+    dbal:
+        url: 'sqlite:///:memory:'
+        driver: pdo_sqlite
+    orm:
+        metadata_cache_driver:
+            type: pool
+            pool: doctrine.system_cache_pool
+        query_cache_driver:
+            type: pool
+            pool: doctrine.system_cache_pool
+        result_cache_driver:
+            type: pool
+            pool: doctrine.result_cache_pool
+
+framework:
+    cache:
+        pools:
+            doctrine.system_cache_pool:
+                adapter: cache.adapter.array
+            doctrine.result_cache_pool:
+                adapter: cache.adapter.array
