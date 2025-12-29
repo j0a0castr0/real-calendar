@@ -41,4 +41,4 @@ RUN mkdir -p /var/log/nginx /var/run
 EXPOSE 80
 
 # Start both PHP-FPM and Nginx
-CMD ["sh", "-c", "php-fpm & nginx -g 'daemon off;'"]
+CMD php bin/console doctrine:migrations:migrate --no-interaction --env=prod && php-fpm & nginx -g 'daemon off;'
