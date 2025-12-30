@@ -2,21 +2,31 @@
 
 namespace App\Controller;
 
+use App\Application\Commands\CommandResultType;
 use App\Application\Commands\CreateListingCommand\CreateListingCommand;
 use App\Application\Commands\CreateListingCommand\CreateListingCommandHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
-    final class CreateListingController extends AbstractController
+final class CreateListingController extends AbstractController
 {
     public function __construct(private readonly CreateListingCommandHandler $handler) {}
 
     #[Route('/listing', methods: ['POST'])]
     public function index(): JsonResponse
     {
-        $this->handler->handle(new CreateListingCommand());
+        $result = $this->handler->handle(new CreateListingCommand());
 
-        return $this->json([], 204);
+        return match ($result->type()) {
+            CommandResultType::SUCCESS => $this->json([
+                'message' => $result->message(),
+                'data' => $result->data()
+            ], 201),
+
+            default => $this->json([
+                'error' => 'Internal Server Error'
+            ], 500),
+        };
     }
 }
