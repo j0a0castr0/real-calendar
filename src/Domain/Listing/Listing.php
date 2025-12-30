@@ -8,6 +8,12 @@ use Ramsey\Uuid\UuidInterface;
 
 final class Listing extends AggregateRoot
 {
+    private Availabilty $availability;
+
+    private function __construct()
+    {
+    }
+
     public static function create(?AggregateId $id = null) : self
     {
         $listing = new self();
@@ -17,18 +23,20 @@ final class Listing extends AggregateRoot
         return $listing;
     }
 
-    public function addAvailability(\DateTimeImmutable $from, \DateTimeImmutable $to) : void
+    public function addAvailabilitySlot(Slot $slot) : void
     {
-        $this->raise(new AvailabiltyWasSet($from, $to));
+        $this->availability->ensureSlotIsAvailableForAddition($slot);
+        $this->raise(new AvailabilitySlotWasAdded($this->id, $slot));
     }
 
     protected function applyListingWasCreated(ListingWasCreated $event): void
     {
         $this->id = $event->aggregateId();
+        $this->availability = new Availabilty();
     }
 
-    protected function applyAvailabiltyWasSet(AvailabiltyWasSet $event): void
+    protected function applyAvailabilitySlotWasAdded(AvailabilitySlotWasAdded $event): void
     {
-
+        $this->availability = $this->availability->add($event->slot());
     }
 }
