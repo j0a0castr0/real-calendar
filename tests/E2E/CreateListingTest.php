@@ -4,7 +4,7 @@ namespace App\Tests\E2E;
 
 use PHPUnit\Framework\Attributes\Test;
 
-final class CreateListing extends E2ETestCase
+final class CreateListingTest extends E2ETestCase
 {
     #[Test]
     public function itShouldCreateListing() : void
@@ -14,6 +14,6 @@ final class CreateListing extends E2ETestCase
 
         $response = $this->getJsonResponse();
         $statusCode = $this->getResponseCode();
-        self::assertEquals(204, $statusCode);
+        self::assertEquals(201, $statusCode);
     }
 }

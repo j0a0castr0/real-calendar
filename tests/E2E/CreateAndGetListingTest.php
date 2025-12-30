@@ -4,7 +4,7 @@ namespace App\Tests\E2E;
 
 use PHPUnit\Framework\Attributes\Test;
 
-class CreateAndGetListing extends E2ETestCase
+class CreateAndGetListingTest extends E2ETestCase
 {
     #[Test]
     public function itShouldGet2NewlyCreatedListings() : void
