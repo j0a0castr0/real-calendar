@@ -17,7 +17,7 @@ final class DoctrineEventStore implements EventStore
     public function load(string $aggregateId): array
     {
         $repo = $this->em->getRepository(EventDTO::class);
-        $storedEvents = $repo->findBy(['aggregateId' => $aggregateId], ['occurredOn' => 'ASC']);
+        $storedEvents = $repo->findBy(['aggregateId' => $aggregateId], ['occurredAt' => 'ASC']);
 
         $events = [];
         foreach ($storedEvents as $stored) {

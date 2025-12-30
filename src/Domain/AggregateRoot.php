@@ -22,9 +22,10 @@ abstract class AggregateRoot
     }
 
     /** Reconstitution from history */
-    public static function reconstitute(AggregateId $id, iterable $events): static
+    public static function reconstitute(AggregateId $id, iterable $events): self
     {
-        $instance = new static();
+        $refClass = new \ReflectionClass(static::class);
+        $instance = $refClass->newInstanceWithoutConstructor();
         $instance->id = $id;
 
         foreach ($events as $event) {

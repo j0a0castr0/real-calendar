@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\EventStore\Doctrine\Entity;
 
+use App\Domain\DomainEvent;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -26,7 +27,7 @@ class EventDTO
     #[ORM\Column(type: 'integer')]
     private int $version;
 
-    public function __construct(string $aggregateId, object $event, int $version)
+    public function __construct(string $aggregateId, DomainEvent $event, int $version)
     {
         $this->aggregateId = $aggregateId;
         $this->eventClass = get_class($event);
@@ -40,19 +41,22 @@ class EventDTO
         return $this->aggregateId;
     }
 
-    public function getEvent(): object
+    public function getEvent(): DomainEvent
     {
         return $this->deserializeEvent($this->eventClass, $this->payload);
     }
 
-    private function serializeEvent(object $event): array
+    private function serializeEvent(DomainEvent $event): array
     {
-        // Simple payload: convert public properties to array
-        return (array) $event;
+        return $event->serialize();
     }
 
-    private function deserializeEvent(string $class, array $payload): object
+    private function deserializeEvent(string $class, array $payload): DomainEvent
     {
-        return new $class(...array_values($payload));
+        if (!is_subclass_of($class, DomainEvent::class)) {
+            throw new \RuntimeException("Class {$class} does not implement DomainEvent");
+        }
+
+        return $class::deserialize($payload);
     }
 }

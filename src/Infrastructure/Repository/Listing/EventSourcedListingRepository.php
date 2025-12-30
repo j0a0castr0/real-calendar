@@ -5,6 +5,7 @@ namespace App\Infrastructure\Repository\Listing;
 use App\Domain\AggregateId;
 use App\Domain\Listing\Listing;
 use App\Domain\Listing\ListingRepository;
+use App\Domain\Listing\ListingWasNotFoundException;
 use App\Infrastructure\EventStore\EventStore;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -20,7 +21,7 @@ final class EventSourcedListingRepository implements ListingRepository
         $events = $this->eventStore->load((string)$id);
 
         if (empty($events)) {
-            throw new \RuntimeException('Listing not found');
+            throw new ListingWasNotFoundException(sprintf('Listing with id "%s" was not found.', $id));
         }
 
         return Listing::reconstitute($id, $events);
