@@ -10,7 +10,6 @@ final class CreateListing extends E2ETestCase
     public function itShouldCreateListing() : void
     {
         $this->jsonRequest('POST', '/listing', [
-
         ]);
 
         $response = $this->getJsonResponse();
