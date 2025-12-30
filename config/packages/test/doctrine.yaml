@@ -1,6 +1,6 @@
 doctrine:
     dbal:
-        url: 'sqlite:///:memory:'
+        url: 'sqlite:///%kernel.cache_dir%/test.sqlite'
         driver: pdo_sqlite
     orm:
         metadata_cache_driver:
