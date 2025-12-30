@@ -1,5 +1,10 @@
 framework:
     messenger:
+        buses:
+            domain_events:
+                default_middleware:
+                    # This allows messages without handlers to be dispatched safely
+                    allow_no_handlers: true
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
         # failure_transport: failed
 
