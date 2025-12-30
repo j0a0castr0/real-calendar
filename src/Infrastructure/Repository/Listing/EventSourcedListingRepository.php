@@ -6,11 +6,13 @@ use App\Domain\AggregateId;
 use App\Domain\Listing\Listing;
 use App\Domain\Listing\ListingRepository;
 use App\Infrastructure\EventStore\EventStore;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 final class EventSourcedListingRepository implements ListingRepository
 {
     public function __construct(
-        private EventStore $eventStore
+        private EventStore $eventStore,
+        private MessageBusInterface $messageBus
     ) {}
 
     public function get(AggregateId $id): Listing
@@ -32,5 +34,8 @@ final class EventSourcedListingRepository implements ListingRepository
         $expectedVersion = $listing->version() - count($events);
 
         $this->eventStore->append((string)$listing->id(), $events, $expectedVersion);
+        foreach ($events as $event) {
+            $this->messageBus->dispatch($event);
+        }
     }
 }
