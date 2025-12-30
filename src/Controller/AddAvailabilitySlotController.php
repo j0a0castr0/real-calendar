@@ -17,7 +17,6 @@ final class AddAvailabilitySlotController extends AbstractController
     #[Route('/listing/{id}/availability', methods: ['POST'])]
     public function index(Request $request, string $id): JsonResponse
     {
-        // Parse JSON request body
         $data = json_decode($request->getContent(), true);
 
         if (!isset($data['from'], $data['to'])) {

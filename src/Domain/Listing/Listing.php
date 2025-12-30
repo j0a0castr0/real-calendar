@@ -9,16 +9,25 @@ use Ramsey\Uuid\UuidInterface;
 final class Listing extends AggregateRoot
 {
     private Availabilty $availability;
+    private PropertyReference $propertyReference;
+    private Agent $agent;
 
     private function __construct()
     {
     }
 
-    public static function create(?AggregateId $id = null) : self
-    {
+    public static function create(
+        PropertyReference $propertyReference,
+        Agent $agent,
+        ?AggregateId $id = null
+    ) : self {
         $listing = new self();
 
-        $listing->raise(new ListingWasCreated($id ?? new AggregateId()));
+        $listing->raise(new ListingWasCreated(
+            $id ?? new AggregateId(),
+            $propertyReference,
+            $agent
+        ));
 
         return $listing;
     }

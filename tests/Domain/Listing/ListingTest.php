@@ -2,15 +2,16 @@
 
 namespace App\Tests\Domain\Listing;
 
+use App\Domain\Listing\Agent;
 use App\Domain\Listing\AvailabilitySlotWasAdded;
 use App\Domain\Listing\CouldNotAddAvailabilityToListing;
 use App\Domain\Listing\Listing;
 use App\Domain\Listing\ListingWasCreated;
+use App\Domain\Listing\PropertyReference;
 use App\Domain\Listing\Slot;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
 
 #[Group("domain")]
 class ListingTest extends TestCase
@@ -18,7 +19,10 @@ class ListingTest extends TestCase
     #[Test]
     public function itShouldCreateAListing() :  void
     {
-        $listing = Listing::create();
+        $listing = Listing::create(
+            new PropertyReference("some-reference"),
+            new Agent("some-agent"),
+        );
 
         $events = $listing->popRecordedEvents();
 
@@ -29,7 +33,10 @@ class ListingTest extends TestCase
     #[Test]
     public function itShouldBePossibleToSetAvailabilityForListing() : void
     {
-        $listing = Listing::create();
+        $listing = Listing::create(
+            new PropertyReference("some-reference"),
+            new Agent("some-agent"),
+        );
         $listing->popRecordedEvents();
 
         $listing->addAvailabilitySlot(
