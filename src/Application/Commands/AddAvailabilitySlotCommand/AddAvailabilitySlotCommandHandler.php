@@ -28,13 +28,13 @@ final class AddAvailabilitySlotCommandHandler
                 ['listingId' => $command->listingId],
                 'Availability slot added successfully.'
             );
-        } catch (ListingWasNotFoundException $e) {var_dump(1);
+        } catch (ListingWasNotFoundException $e) {
             return CommandResult::notFound($e->getMessage());
-        } catch (\InvalidArgumentException $e) {var_dump(2);
+        } catch (\InvalidArgumentException $e) {
             return CommandResult::notFound(sprintf("Listing %s not found.", $command->listingId));
-        } catch (CouldNotAddAvailabilityToListing $e) {var_dump(3);
+        } catch (CouldNotAddAvailabilityToListing $e) {
             return CommandResult::domainError($e->getMessage());
-        } catch (\Exception $e) {var_dump($e->getMessage());
+        } catch (\Exception $e) {
             return CommandResult::failure($e->getMessage());
         }
     }

@@ -11,4 +11,10 @@ class ListingDoctrineDTO
     #[ORM\Id]
     #[ORM\Column(type: 'string')]
     public string $id;
+
+    #[ORM\Column(type: 'string')]
+    public string $propertyReference;
+
+    #[ORM\Column(type: 'string')]
+    public string $agent;
 }

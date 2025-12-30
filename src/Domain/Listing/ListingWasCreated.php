@@ -16,6 +16,16 @@ final class ListingWasCreated extends AbstractDomainEvent
         parent::__construct($id);
     }
 
+    public function propertyReference(): PropertyReference
+    {
+        return $this->propertyReference;
+    }
+
+    public function agent(): Agent
+    {
+        return $this->agent;
+    }
+
     public function serialize(): array
     {
         return [
@@ -36,5 +46,10 @@ final class ListingWasCreated extends AbstractDomainEvent
         $self->occurredAt = new \DateTimeImmutable($serialized['occurred_at']);
 
         return $self;
+    }
+
+    public function getPropertyReference(): PropertyReference
+    {
+        return $this->propertyReference;
     }
 }

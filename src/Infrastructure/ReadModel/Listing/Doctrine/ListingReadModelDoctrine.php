@@ -17,6 +17,8 @@ final class ListingReadModelDoctrine implements ListingReadModel
 
         return array_map(fn(ListingDoctrineDTO $listingDto) => new Listing(
             $listingDto->id,
+            $listingDto->propertyReference,
+            $listingDto->agent,
         ), $listingsDto);
     }
 }

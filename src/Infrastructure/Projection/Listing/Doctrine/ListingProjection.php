@@ -18,6 +18,8 @@ final class ListingProjection
     {
         $listingDoctrine = new ListingDoctrineDTO();
         $listingDoctrine->id = (string) $event->aggregateId();
+        $listingDoctrine->propertyReference = (string) $event->propertyReference();
+        $listingDoctrine->agent = (string) $event->agent();
 
         $this->em->persist($listingDoctrine);
         $this->em->flush();
