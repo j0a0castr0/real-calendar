@@ -8,11 +8,16 @@ use App\Domain\Listing\ListingRepository;
 use App\Domain\Listing\ListingWasNotFoundException;
 use App\Domain\Listing\Slot;
 use App\Domain\Listing\CouldNotAddAvailabilityToListing;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Throwable;
 
 final class AddAvailabilitySlotCommandHandler
 {
-    public function __construct(private readonly ListingRepository $repository) {}
+    public function __construct(
+        private readonly ListingRepository $repository,
+        private readonly LoggerInterface $logger = new NullLogger()
+    ) {}
 
     public function handle(AddAvailabilitySlotCommand $command): CommandResult
     {
@@ -35,6 +40,7 @@ final class AddAvailabilitySlotCommandHandler
         } catch (CouldNotAddAvailabilityToListing $e) {
             return CommandResult::domainError($e->getMessage());
         } catch (\Exception $e) {
+            $this->logger->error('Failed to add availability slot', ['exception' => $e]);
             return CommandResult::failure($e->getMessage());
         }
     }
