@@ -1,0 +1,19 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # In-memory validator for tests
+    App\Shared\Validator\JWTValidatorInterface:
+        alias: App\Shared\Validator\InMemory\InMemoryJWTValidator
+
+    # Optional: override CognitoJWTValidator arguments so container builds
+    App\AuthContext\Validator\CognitoJWTValidator:
+        public: false
+
+    # Optional: AuthController dummy arguments
+    App\AuthContext\Controller\AuthController:
+        arguments:
+            $region: 'dummy'
+            $userPoolId: 'dummy'
+            $clientId: 'dummy'

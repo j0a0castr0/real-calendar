@@ -9,7 +9,7 @@ final class CreateListingTest extends E2ETestCase
     #[Test]
     public function itShouldCreateListing() : void
     {
-        $this->jsonRequest('POST', '/listing', [
+        $this->jsonRequestWithAuth('POST', '/listing', [
             'propertyReference' => 'some-reference',
             'agent' => 'agent'
         ]);
@@ -21,7 +21,7 @@ final class CreateListingTest extends E2ETestCase
     #[Test]
     public function itShouldNotCreateListIfMissingPropertyReference() : void
     {
-        $this->jsonRequest('POST', '/listing', [
+        $this->jsonRequestWithAuth('POST', '/listing', [
             'agent' => 'agent'
         ]);
 
@@ -32,7 +32,7 @@ final class CreateListingTest extends E2ETestCase
     #[Test]
     public function itShouldNotCreateListIfMissingAgent() : void
     {
-        $this->jsonRequest('POST', '/listing', [
+        $this->jsonRequestWithAuth('POST', '/listing', [
             'propertyReference' => 'some-reference',
         ]);
 
@@ -43,7 +43,7 @@ final class CreateListingTest extends E2ETestCase
     #[Test]
     public function itShouldNotCreateListIfEmptyAgent() : void
     {
-        $this->jsonRequest('POST', '/listing', [
+        $this->jsonRequestWithAuth('POST', '/listing', [
             'propertyReference' => 'some-reference',
             'agent' => '',
         ]);
@@ -55,7 +55,7 @@ final class CreateListingTest extends E2ETestCase
     #[Test]
     public function itShouldNotCreateListIfEmptyPropertyReference() : void
     {
-        $this->jsonRequest('POST', '/listing', [
+        $this->jsonRequestWithAuth('POST', '/listing', [
             'propertyReference' => '',
             'agent' => 'agent',
         ]);

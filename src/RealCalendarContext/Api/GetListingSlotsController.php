@@ -1,6 +1,6 @@
 <?php
 
-namespace App\RealCalendarContext\Controller;
+namespace App\RealCalendarContext\Api;
 
 use App\RealCalendarContext\Application\Queries\GetListingSlotsQuery\GetListingSlotsQuery;
 use App\RealCalendarContext\Application\Queries\GetListingSlotsQuery\GetListingSlotsQueryHandler;
@@ -16,7 +16,7 @@ final class GetListingSlotsController extends AbstractController
     ) {}
 
     #[Route('/listing/{id}/slots', methods: ['GET', 'OPTIONS'])]
-    public function index(string $id): JsonResponse
+    public function index(string $id, string $_agentEmail): JsonResponse
     {
         $slots = $this->handler->handle(new GetListingSlotsQuery($id));
 

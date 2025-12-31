@@ -4,6 +4,10 @@ namespace App\Tests\E2E;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Builder;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -59,6 +63,18 @@ abstract class E2ETestCase extends WebTestCase
         $this->client->jsonRequest($method, $uri, $data);
     }
 
+    protected function jsonRequestWithAuth(
+        string $method,
+        string $uri,
+        array $data = [],
+        string $email = 'test@agent.com'
+    ): void {
+        $token = $this->getTestToken($email);
+
+        $this->client->setServerParameter('HTTP_AUTHORIZATION', 'Bearer ' . $token);
+        $this->client->jsonRequest($method, $uri, $data);
+    }
+
     protected function getResponseCode(): int
     {
         return $this->client->getResponse()->getStatusCode();
@@ -69,5 +85,25 @@ abstract class E2ETestCase extends WebTestCase
         $content = $this->client->getResponse()->getContent();
 
         return $content ? json_decode($content, true, 512, JSON_THROW_ON_ERROR) : [];
+    }
+
+    private function getTestToken(string $email = 'test@agent.com'): string
+    {
+        $signer = new Sha256();
+        $key = InMemory::plainText('this-is-a-very-long-test-secret-key-of-at-least-32-bytes');
+
+        $config = Configuration::forSymmetricSigner($signer, $key);
+
+        $now = new \DateTimeImmutable();
+
+        $token = $config->builder()
+            ->issuedBy('test-issuer')       // iss claim
+            ->permittedFor('test-audience') // aud claim
+            ->issuedAt($now)                // iat claim
+            ->expiresAt($now->modify('+1 hour')) // exp claim
+            ->withClaim('email', $email)
+            ->getToken($config->signer(), $config->signingKey());
+
+        return $token->toString();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\RealCalendarContext\Controller;
+namespace App\RealCalendarContext\Api;
 
 use App\RealCalendarContext\Application\Commands\CommandResultType;
 use App\RealCalendarContext\Application\Commands\AddAvailabilitySlotCommand\AddAvailabilitySlotCommand;
@@ -15,7 +15,7 @@ final class AddAvailabilitySlotController extends AbstractController
     public function __construct(private readonly AddAvailabilitySlotCommandHandler $handler) {}
 
     #[Route('/listing/{id}/availability', methods: ['POST', 'OPTIONS'])]
-    public function index(Request $request, string $id): JsonResponse
+    public function index(Request $request, string $id, string $_agentEmail): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 

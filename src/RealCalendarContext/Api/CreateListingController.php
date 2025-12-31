@@ -1,6 +1,6 @@
 <?php
 
-namespace App\RealCalendarContext\Controller;
+namespace App\RealCalendarContext\Api;
 
 use App\RealCalendarContext\Application\Commands\CommandResultType;
 use App\RealCalendarContext\Application\Commands\CreateListingCommand\CreateListingCommand;

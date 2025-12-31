@@ -9,7 +9,7 @@ class AddListingAvailabilitySlotsTest extends E2ETestCase
     #[Test]
     public function itShouldNotBePossibleToAddSlotsToANonExistingListing() : void
     {
-        $this->jsonRequest('POST', '/listing/bleh/availability', [
+        $this->jsonRequestWithAuth('POST', '/listing/bleh/availability', [
             'to' => new \DateTimeImmutable('+2 hours')->format('c'),
             'from' => new \DateTimeImmutable('+1 hours')->format('c')
         ]);
@@ -21,7 +21,7 @@ class AddListingAvailabilitySlotsTest extends E2ETestCase
     #[Test]
     public function itShouldNotBePossibleToAddSlotsToANonExistingListingWithValidId() : void
     {
-        $this->jsonRequest('POST', '/listing/f828d9f5-71eb-4409-ba80-5eb6a7f8a5af/availability', [
+        $this->jsonRequestWithAuth('POST', '/listing/f828d9f5-71eb-4409-ba80-5eb6a7f8a5af/availability', [
             'to' => new \DateTimeImmutable('+2 hours')->format('c'),
             'from' => new \DateTimeImmutable('+1 hours')->format('c')
         ]);
@@ -33,7 +33,7 @@ class AddListingAvailabilitySlotsTest extends E2ETestCase
     #[Test]
     public function itShouldBePossibleToAddAnAvailabilitySlot() : void
     {
-        $this->jsonRequest('POST', '/listing', [
+        $this->jsonRequestWithAuth('POST', '/listing', [
             'propertyReference' => 'some-reference',
             'agent' => 'agent'
         ]);
@@ -52,16 +52,18 @@ class AddListingAvailabilitySlotsTest extends E2ETestCase
     #[Test]
     public function itShouldNotBePossibleToOverlapSlots() : void
     {
-        $this->jsonRequest('POST', '/listing', [
+        $this->jsonRequestWithAuth('POST', '/listing', [
+            'propertyReference' => 'some-reference',
+            'agent' => 'agent'
         ]);
         $response = $this->getJsonResponse();
         $id = $response['data']['id'];
 
-        $this->jsonRequest('POST', sprintf('/listing/%s/availability', $id), [
+        $this->jsonRequestWithAuth('POST', sprintf('/listing/%s/availability', $id), [
             'to' => new \DateTimeImmutable('+2 hours')->format('c'),
             'from' => new \DateTimeImmutable('+1 hours')->format('c')
         ]);
-        $this->jsonRequest('POST', sprintf('/listing/%s/availability', $id), [
+        $this->jsonRequestWithAuth('POST', sprintf('/listing/%s/availability', $id), [
             'to' => new \DateTimeImmutable('+1 hours 30 mins')->format('c'),
             'from' => new \DateTimeImmutable('30 mins')->format('c')
         ]);

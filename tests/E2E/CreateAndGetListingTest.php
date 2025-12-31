@@ -9,16 +9,16 @@ class CreateAndGetListingTest extends E2ETestCase
     #[Test]
     public function itShouldGet2NewlyCreatedListings() : void
     {
-        $this->jsonRequest('POST', '/listing', [
+        $this->jsonRequestWithAuth('POST', '/listing', [
             'propertyReference' => 'some-reference',
             'agent' => 'agent'
         ]);
-        $this->jsonRequest('POST', '/listing', [
+        $this->jsonRequestWithAuth('POST', '/listing', [
             'propertyReference' => 'some-reference',
             'agent' => 'agent'
         ]);
 
-        $this->jsonRequest('GET', '/listing');
+        $this->jsonRequestWithAuth('GET', '/listing');
 
         $response = $this->getJsonResponse();
         $statusCode = $this->getResponseCode();
@@ -29,7 +29,7 @@ class CreateAndGetListingTest extends E2ETestCase
     #[Test]
     public function itShouldGet1NewlyCreatedListingWithCorrectAgentAndPropertyReference() : void
     {
-        $this->jsonRequest('POST', '/listing', [
+        $this->jsonRequestWithAuth('POST', '/listing', [
             'propertyReference' => 'some-reference',
             'agent' => 'agent'
         ]);
