@@ -14,7 +14,7 @@ final class CreateListingController extends AbstractController
 {
     public function __construct(private readonly CreateListingCommandHandler $handler) {}
 
-    #[Route('/listing', methods: ['POST'])]
+    #[Route('/listing', methods: ['POST', 'OPTIONS'])]
     public function index(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);

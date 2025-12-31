@@ -14,7 +14,7 @@ final class GetListingSlotsController extends AbstractController
         private ListingSlotsReadModel $listingSlotsReadModel,
     ) {}
 
-    #[Route('/listing/{id}/slots', methods: ['GET'])]
+    #[Route('/listing/{id}/slots', methods: ['GET', 'OPTIONS'])]
     public function index(string $id): JsonResponse
     {
         $slots = $this->listingSlotsReadModel->getAllForListing($id);

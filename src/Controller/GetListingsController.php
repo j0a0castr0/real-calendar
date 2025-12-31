@@ -13,7 +13,7 @@ class GetListingsController extends AbstractController
 {
     public function __construct(private GetListingsQueryHandler $handler) {}
 
-    #[Route('/listing', methods: ['GET'])]
+    #[Route('/listing', methods: ['GET', 'OPTIONS'])]
     public function index(): JsonResponse
     {
         $listings = $this->handler->handle(new GetListingsQuery());
