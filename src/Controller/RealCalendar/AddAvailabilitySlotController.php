@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\RealCalendar;
 
 use App\Application\Commands\AddAvailabilitySlotCommand\AddAvailabilitySlotCommand;
 use App\Application\Commands\AddAvailabilitySlotCommand\AddAvailabilitySlotCommandHandler;

@@ -41,8 +41,8 @@ class ListingTest extends TestCase
 
         $listing->addAvailabilitySlot(
             new Slot(
-                (new \DateTimeImmutable())->modify('+1 hour'),
-                (new \DateTimeImmutable())->modify('+2 hour')
+                (new \DateTimeImmutable('2025-12-24'))->modify('+1 hour'),
+                (new \DateTimeImmutable('2025-12-24'))->modify('+2 hour')
             )
         );
         $events = $listing->popRecordedEvents();
@@ -54,23 +54,63 @@ class ListingTest extends TestCase
     #[Test]
     public function itShouldNotOverlapAvailability() : void
     {
-        $listing = Listing::create();
+        $listing = Listing::create(
+            new PropertyReference("some-reference"),
+            new Agent("some-agent"),
+        );
 
 
         $listing->addAvailabilitySlot(
             new Slot(
-                (new \DateTimeImmutable())->modify('+1 hour'),
-                (new \DateTimeImmutable())->modify('+2 hour')
+                (new \DateTimeImmutable('2025-12-24'))->modify('+1 hour'),
+                (new \DateTimeImmutable('2025-12-24'))->modify('+2 hour')
             )
         );
 
         $this->expectException(CouldNotAddAvailabilityToListing::class);
         $listing->addAvailabilitySlot(
             new Slot(
-                (new \DateTimeImmutable())->modify('+30 minutes'),
-                (new \DateTimeImmutable())->modify('+1 hour 30 minutes')
+                (new \DateTimeImmutable('2025-12-24'))->modify('+30 minutes'),
+                (new \DateTimeImmutable('2025-12-24'))->modify('+1 hour 30 minutes')
             )
         );
 
+    }
+
+    #[Test]
+    public function itShouldNotBePossibleToCreateListingWithEmptyAgent() : void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Listing::create(
+            new PropertyReference("some-reference"),
+            new Agent(""),
+        );
+    }
+
+    #[Test]
+    public function itShouldNotBePossibleToCreateListingWithEmptyPropertyReference() : void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Listing::create(
+            new PropertyReference(""),
+            new Agent("agent"),
+        );
+    }
+
+    #[Test]
+    public function itShouldNotBePossibleToBookASlotForDifferentDays() : void
+    {
+        $listing = Listing::create(
+            new PropertyReference("some-reference"),
+            new Agent("some-agent"),
+        );
+
+        $this->expectException(\InvalidArgumentException::class);
+        $listing->addAvailabilitySlot(
+            new Slot(
+                (new \DateTimeImmutable('2025-12-24'))->modify('+30 minutes'),
+                (new \DateTimeImmutable('2025-12-24'))->modify('+24 hour 30 minutes')
+            )
+        );
     }
 }

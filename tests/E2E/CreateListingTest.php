@@ -39,4 +39,28 @@ final class CreateListingTest extends E2ETestCase
         $statusCode = $this->getResponseCode();
         self::assertEquals(400, $statusCode);
     }
+
+    #[Test]
+    public function itShouldNotCreateListIfEmptyAgent() : void
+    {
+        $this->jsonRequest('POST', '/listing', [
+            'propertyReference' => 'some-reference',
+            'agent' => '',
+        ]);
+
+        $statusCode = $this->getResponseCode();
+        self::assertEquals(400, $statusCode);
+    }
+
+    #[Test]
+    public function itShouldNotCreateListIfEmptyPropertyReference() : void
+    {
+        $this->jsonRequest('POST', '/listing', [
+            'propertyReference' => '',
+            'agent' => 'agent',
+        ]);
+
+        $statusCode = $this->getResponseCode();
+        self::assertEquals(400, $statusCode);
+    }
 }

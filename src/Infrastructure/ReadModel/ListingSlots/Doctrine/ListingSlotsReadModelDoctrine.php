@@ -14,7 +14,11 @@ final class ListingSlotsReadModelDoctrine implements ListingSlotsReadModel
 
     public function getAllForListing(string $id): array
     {
-        $listingsDto = $this->em->getRepository(ListingSlotsDoctrineDTO::class)->findAll();
+        $listingsDto = $this->em->getRepository(ListingSlotsDoctrineDTO::class)->findBy([
+            'listingId' => $id
+        ], [
+            'from' => 'ASC'
+        ]);
 
         return array_map(
             fn(ListingSlotsDoctrineDTO $dto) => new ListingSlot(

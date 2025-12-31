@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\RealCalendar;
 
 use App\Application\Queries\GetListingsQuery\GetListingsQuery;
 use App\Application\Queries\GetListingsQuery\GetListingsQueryHandler;

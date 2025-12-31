@@ -19,5 +19,11 @@ services:
     App\:
         resource: '../src/'
 
+    App\Controller\Auth\AuthController:
+        arguments:
+            $region: '%env(COGNITO_REGION)%'
+            $userPoolId: '%env(COGNITO_USER_POOL_ID)%'
+            $clientId: '%env(COGNITO_CLIENT_ID)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

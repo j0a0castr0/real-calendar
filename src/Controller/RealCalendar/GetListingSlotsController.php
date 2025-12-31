@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\RealCalendar;
 
+use App\Application\Queries\GetListingSlotsQuery\GetListingSlotsQuery;
+use App\Application\Queries\GetListingSlotsQuery\GetListingSlotsQueryHandler;
 use App\Application\ReadModel\ListingSlots\ListingSlot;
-use App\Application\ReadModel\ListingSlots\ListingSlotsReadModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -11,13 +12,13 @@ use Symfony\Component\Routing\Attribute\Route;
 final class GetListingSlotsController extends AbstractController
 {
     public function __construct(
-        private ListingSlotsReadModel $listingSlotsReadModel,
+        private GetListingSlotsQueryHandler $handler,
     ) {}
 
     #[Route('/listing/{id}/slots', methods: ['GET', 'OPTIONS'])]
     public function index(string $id): JsonResponse
     {
-        $slots = $this->listingSlotsReadModel->getAllForListing($id);
+        $slots = $this->handler->handle(new GetListingSlotsQuery($id));
 
         return $this->json(array_map(fn(ListingSlot $item) => $item->toArray(), $slots));
     }

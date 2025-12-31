@@ -29,6 +29,8 @@ final class CreateListingCommandHandler
             return CommandResult::success(
                 ['id' => (string )$listing->id()],
             );
+        } catch (\InvalidArgumentException $e) {
+            return CommandResult::domainError($e->getMessage());
         } catch (\Exception $e) {
             $this->logger->error('Failed to add availability slot', ['exception' => $e]);
             return CommandResult::failure($e->getMessage());

@@ -13,7 +13,7 @@ final class AggregateId
         $uuid = $uuid ?? Uuid::uuid4()->toString();
 
         if (!Uuid::isValid($uuid)) {
-            throw new \InvalidArgumentException("Invalid UUID: $uuid");
+            throw new \InvalidArgumentException("$uuid It is not a valid id");
         }
 
         $this->uuid = $uuid;

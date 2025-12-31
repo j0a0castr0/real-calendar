@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\RealCalendar;
 
 use App\Application\Commands\CommandResultType;
 use App\Application\Commands\CreateListingCommand\CreateListingCommand;
@@ -32,7 +32,9 @@ final class CreateListingController extends AbstractController
                 'message' => $result->message(),
                 'data' => $result->data()
             ], 201),
-
+            CommandResultType::DOMAIN_ERROR => $this->json([
+                'error' => $result->message(),
+            ], 400),
             default => $this->json([
                 'error' => 'Internal Server Error'
             ], 500),

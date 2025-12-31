@@ -5,7 +5,7 @@ namespace App\Application\ReadModel\ListingSlots;
 interface ListingSlotsReadModel
 {
     /**
-     * @return ListSlot[]
+     * @return ListingSlot[]
      */
     public function getAllForListing(string $id) :array;
 }

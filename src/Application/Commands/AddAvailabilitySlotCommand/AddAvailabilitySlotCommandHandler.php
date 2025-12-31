@@ -35,9 +35,7 @@ final class AddAvailabilitySlotCommandHandler
             );
         } catch (ListingWasNotFoundException $e) {
             return CommandResult::notFound($e->getMessage());
-        } catch (\InvalidArgumentException $e) {
-            return CommandResult::notFound(sprintf("Listing %s not found.", $command->listingId));
-        } catch (CouldNotAddAvailabilityToListing $e) {
+        } catch (\InvalidArgumentException|CouldNotAddAvailabilityToListing $e) {
             return CommandResult::domainError($e->getMessage());
         } catch (\Exception $e) {
             $this->logger->error('Failed to add availability slot', ['exception' => $e]);

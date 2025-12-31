@@ -224,3 +224,51 @@ Resources:
                         - !Ref PublicSubnet
                     SecurityGroups:
                         - !Ref ECSServiceSG
+    RealCalendarUserPool:
+        Type: AWS::Cognito::UserPool
+        Properties:
+            UserPoolName: RealCalendarUserPool
+            AutoVerifiedAttributes:
+                - email
+            UsernameAttributes:
+                - email
+            AccountRecoverySetting:
+                RecoveryMechanisms:
+                    - Name: verified_email
+                      Priority: 1
+            Policies:
+                PasswordPolicy:
+                    MinimumLength: 8
+                    RequireUppercase: true
+                    RequireLowercase: true
+                    RequireNumbers: true
+                    RequireSymbols: false
+            AdminCreateUserConfig:
+                AllowAdminCreateUserOnly: true
+            MfaConfiguration: "OFF"
+
+    RealCalendarUserPoolClient:
+        Type: AWS::Cognito::UserPoolClient
+        Properties:
+            ClientName: RealCalendarUserPoolClient
+            UserPoolId: !Ref RealCalendarUserPool
+            GenerateSecret: false
+            ExplicitAuthFlows:
+                - ALLOW_ADMIN_USER_PASSWORD_AUTH
+
+    RealCalendarUserPoolAgentGroup:
+        Type: AWS::Cognito::UserPoolGroup
+        Properties:
+            GroupName: agent
+            UserPoolId: !Ref RealCalendarUserPool
+            Description: Real calendar agent group
+
+Outputs:
+    UserPoolId:
+        Value: !Ref RealCalendarUserPool
+        Export:
+            Name: RealCalendarUserPoolId
+    UserPoolClientId:
+        Value: !Ref RealCalendarUserPoolClient
+        Export:
+            Name: RealCalendarUserPoolClientId
