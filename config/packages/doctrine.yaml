@@ -27,6 +27,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Infrastructure/ReadModel/Listing/Doctrine/Entity'
                 prefix: 'App\Infrastructure\ReadModel\Listing\Doctrine\Entity'
                 alias: ListingReadModel
+            ListingSlotsReadModel:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Infrastructure/ReadModel/ListingSlots/Doctrine/Entity'
+                prefix: 'App\Infrastructure\ReadModel\ListingSlots\Doctrine\Entity'
+                alias: ListingReadModel
         controller_resolver:
             auto_mapping: false
 

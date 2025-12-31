@@ -34,6 +34,8 @@ class AddListingAvailabilitySlotsTest extends E2ETestCase
     public function itShouldBePossibleToAddAnAvailabilitySlot() : void
     {
         $this->jsonRequest('POST', '/listing', [
+            'propertyReference' => 'some-reference',
+            'agent' => 'agent'
         ]);
         $response = $this->getJsonResponse();
         $id = $response['data']['id'];

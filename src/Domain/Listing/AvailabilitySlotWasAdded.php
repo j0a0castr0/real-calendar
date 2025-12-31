@@ -8,9 +8,14 @@ use App\Domain\DomainEvent;
 
 final class AvailabilitySlotWasAdded extends AbstractDomainEvent
 {
-    public function __construct(AggregateId $id, private Slot $slot)
+    public function __construct(AggregateId $id, private Slot $slot, private Agent $agent)
     {
         parent::__construct($id);
+    }
+
+    public function agent(): Agent
+    {
+        return $this->agent;
     }
 
     public function slot(): Slot
@@ -26,6 +31,7 @@ final class AvailabilitySlotWasAdded extends AbstractDomainEvent
             'from' => $this->slot->from()->format('c'),
             'to' => $this->slot->to()->format('c'),
             'occurred_at' => $this->occurredAt()->format('c'),
+            'agent' => (string) $this->agent
         ];
     }
 
@@ -38,7 +44,8 @@ final class AvailabilitySlotWasAdded extends AbstractDomainEvent
 
         return new self(
             new AggregateId($serialized['aggregate_id']),
-            $slot
+            $slot,
+            new Agent($serialized['agent'])
         );
     }
 }

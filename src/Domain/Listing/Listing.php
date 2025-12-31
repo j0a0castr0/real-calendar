@@ -35,13 +35,15 @@ final class Listing extends AggregateRoot
     public function addAvailabilitySlot(Slot $slot) : void
     {
         $this->availability->ensureSlotIsAvailableForAddition($slot);
-        $this->raise(new AvailabilitySlotWasAdded($this->id, $slot));
+        $this->raise(new AvailabilitySlotWasAdded($this->id, $slot, $this->agent));
     }
 
     protected function applyListingWasCreated(ListingWasCreated $event): void
     {
         $this->id = $event->aggregateId();
         $this->availability = new Availabilty();
+        $this->agent = $event->agent();
+        $this->propertyReference = $event->propertyReference();
     }
 
     protected function applyAvailabilitySlotWasAdded(AvailabilitySlotWasAdded $event): void
