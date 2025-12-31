@@ -2,13 +2,13 @@
 
 namespace App\Tests\Domain\Listing;
 
-use App\Domain\Listing\Agent;
-use App\Domain\Listing\AvailabilitySlotWasAdded;
-use App\Domain\Listing\CouldNotAddAvailabilityToListing;
-use App\Domain\Listing\Listing;
-use App\Domain\Listing\ListingWasCreated;
-use App\Domain\Listing\PropertyReference;
-use App\Domain\Listing\Slot;
+use App\RealCalendarContext\Domain\Listing\Agent;
+use App\RealCalendarContext\Domain\Listing\AvailabilitySlotWasAdded;
+use App\RealCalendarContext\Domain\Listing\CouldNotAddAvailabilityToListing;
+use App\RealCalendarContext\Domain\Listing\Listing;
+use App\RealCalendarContext\Domain\Listing\ListingWasCreated;
+use App\RealCalendarContext\Domain\Listing\PropertyReference;
+use App\RealCalendarContext\Domain\Listing\Slot;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

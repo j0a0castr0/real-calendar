@@ -2,13 +2,10 @@
 
 namespace App\Tests\Domain\Listing;
 
-use App\Domain\Listing\Listing;
-use App\Domain\Listing\ListingWasCreated;
-use App\Domain\Listing\Slot;
+use App\RealCalendarContext\Domain\Listing\Slot;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
 
 #[Group("domain")]
 class SlotTest extends TestCase

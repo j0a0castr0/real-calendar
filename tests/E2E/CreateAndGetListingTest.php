@@ -9,8 +9,14 @@ class CreateAndGetListingTest extends E2ETestCase
     #[Test]
     public function itShouldGet2NewlyCreatedListings() : void
     {
-        $this->jsonRequest('POST', '/listing');
-        $this->jsonRequest('POST', '/listing');
+        $this->jsonRequest('POST', '/listing', [
+            'propertyReference' => 'some-reference',
+            'agent' => 'agent'
+        ]);
+        $this->jsonRequest('POST', '/listing', [
+            'propertyReference' => 'some-reference',
+            'agent' => 'agent'
+        ]);
 
         $this->jsonRequest('GET', '/listing');
 

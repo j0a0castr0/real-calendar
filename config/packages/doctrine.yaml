@@ -18,20 +18,20 @@ doctrine:
             EventStore:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Infrastructure/EventStore/Doctrine/Entity'
-                prefix: 'App\Infrastructure\EventStore\Doctrine\Entity'
+                dir: '%kernel.project_dir%/src/RealCalendarContext/Infrastructure/EventStore/Doctrine/Entity'
+                prefix: 'App\RealCalendarContext\Infrastructure\EventStore\Doctrine\Entity'
                 alias: EventStore
             ListingReadModel:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Infrastructure/ReadModel/Listing/Doctrine/Entity'
-                prefix: 'App\Infrastructure\ReadModel\Listing\Doctrine\Entity'
+                dir: '%kernel.project_dir%/src/RealCalendarContext/Infrastructure/ReadModel/Listing/Doctrine/Entity'
+                prefix: 'App\RealCalendarContext\Infrastructure\ReadModel\Listing\Doctrine\Entity'
                 alias: ListingReadModel
             ListingSlotsReadModel:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Infrastructure/ReadModel/ListingSlots/Doctrine/Entity'
-                prefix: 'App\Infrastructure\ReadModel\ListingSlots\Doctrine\Entity'
+                dir: '%kernel.project_dir%/src/RealCalendarContext/Infrastructure/ReadModel/ListingSlots/Doctrine/Entity'
+                prefix: 'App\RealCalendarContext\Infrastructure\ReadModel\ListingSlots\Doctrine\Entity'
                 alias: ListingReadModel
         controller_resolver:
             auto_mapping: false

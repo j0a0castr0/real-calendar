@@ -19,7 +19,7 @@ services:
     App\:
         resource: '../src/'
 
-    App\Controller\Auth\AuthController:
+    App\AuthContext\Controller\AuthController:
         arguments:
             $region: '%env(COGNITO_REGION)%'
             $userPoolId: '%env(COGNITO_USER_POOL_ID)%'

@@ -15,7 +15,7 @@ class AddListingAvailabilitySlotsTest extends E2ETestCase
         ]);
 
         $statusCode = $this->getResponseCode();
-        self::assertEquals(404, $statusCode);
+        self::assertEquals(400, $statusCode);
     }
 
     #[Test]
