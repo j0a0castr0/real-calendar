@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Production-ready ECS Fargate + real-calendar API + RDS
+Description: ECS + RDS stack for RealCalendar API
 
 Parameters:
     VpcCidr:
@@ -32,9 +32,6 @@ Resources:
             CidrBlock: !Ref VpcCidr
             EnableDnsSupport: true
             EnableDnsHostnames: true
-            Tags:
-                - Key: Name
-                  Value: real-calendar-api-vpc
 
     InternetGateway:
         Type: AWS::EC2::InternetGateway
@@ -51,39 +48,18 @@ Resources:
             VpcId: !Ref VPC
             CidrBlock: !Ref PublicSubnetCidr
             MapPublicIpOnLaunch: true
-            AvailabilityZone: !Select [0, !GetAZs '']
 
     PrivateSubnetA:
         Type: AWS::EC2::Subnet
         Properties:
             VpcId: !Ref VPC
             CidrBlock: 10.0.2.0/24
-            AvailabilityZone: !Select [ 0, !GetAZs '' ]
 
     PrivateSubnetB:
         Type: AWS::EC2::Subnet
         Properties:
             VpcId: !Ref VPC
             CidrBlock: 10.0.3.0/24
-            AvailabilityZone: !Select [ 1, !GetAZs '' ]
-
-    PublicRouteTable:
-        Type: AWS::EC2::RouteTable
-        Properties:
-            VpcId: !Ref VPC
-
-    PublicRoute:
-        Type: AWS::EC2::Route
-        Properties:
-            RouteTableId: !Ref PublicRouteTable
-            DestinationCidrBlock: 0.0.0.0/0
-            GatewayId: !Ref InternetGateway
-
-    PublicSubnetRouteTableAssociation:
-        Type: AWS::EC2::SubnetRouteTableAssociation
-        Properties:
-            SubnetId: !Ref PublicSubnet
-            RouteTableId: !Ref PublicRouteTable
 
     ###################
     # Security Groups
@@ -129,7 +105,6 @@ Resources:
             MultiAZ: false
             PubliclyAccessible: false
             StorageType: gp3
-            DeletionProtection: true
 
     DBSubnetGroup:
         Type: AWS::RDS::DBSubnetGroup
@@ -146,14 +121,11 @@ Resources:
         Type: AWS::ECR::Repository
 
     ###################
-    # ECS Cluster
+    # ECS Cluster & Execution Role
     ###################
     ECSCluster:
         Type: AWS::ECS::Cluster
 
-    ###################
-    # ECS Task Execution Role
-    ###################
     ECSExecutionRole:
         Type: AWS::IAM::Role
         Properties:
@@ -193,7 +165,7 @@ Resources:
                       - Name: DATABASE_URL
                         Value: !Sub
                             - "pgsql://${DBUsername}:${DBPassword}@${DBHost}:5432/realcalendardb"
-                            -  DBHost: !GetAtt PostgresDB.Endpoint.Address
+                            - DBHost: !GetAtt PostgresDB.Endpoint.Address
                   LogConfiguration:
                       LogDriver: awslogs
                       Options:
@@ -224,100 +196,9 @@ Resources:
                         - !Ref PublicSubnet
                     SecurityGroups:
                         - !Ref ECSServiceSG
-    RealCalendarUserPool:
-        Type: AWS::Cognito::UserPool
-        Properties:
-            UserPoolName: RealCalendarUserPool
-            AutoVerifiedAttributes:
-                - email
-            UsernameAttributes:
-                - email
-            AccountRecoverySetting:
-                RecoveryMechanisms:
-                    - Name: verified_email
-                      Priority: 1
-            Policies:
-                PasswordPolicy:
-                    MinimumLength: 8
-                    RequireUppercase: true
-                    RequireLowercase: true
-                    RequireNumbers: true
-                    RequireSymbols: false
-            AdminCreateUserConfig:
-                AllowAdminCreateUserOnly: true
-            MfaConfiguration: "OFF"
-            LambdaConfig:
-                PreTokenGeneration: !GetAtt PreTokenGenerationLambda.Arn
-
-    RealCalendarUserPoolClient:
-        Type: AWS::Cognito::UserPoolClient
-        Properties:
-            ClientName: RealCalendarUserPoolClient
-            UserPoolId: !Ref RealCalendarUserPool
-            GenerateSecret: false
-            ExplicitAuthFlows:
-                - ALLOW_ADMIN_USER_PASSWORD_AUTH
-
-    RealCalendarUserPoolAgentGroup:
-        Type: AWS::Cognito::UserPoolGroup
-        Properties:
-            GroupName: agent
-            UserPoolId: !Ref RealCalendarUserPool
-            Description: Real calendar agent group
-
-    PreTokenGenerationLambdaRole:
-        Type: AWS::IAM::Role
-        Properties:
-            RoleName: RealCalendarPreTokenLambdaRole
-            AssumeRolePolicyDocument:
-                Version: "2012-10-17"
-                Statement:
-                    -   Effect: Allow
-                        Principal:
-                            Service:
-                                - lambda.amazonaws.com
-                        Action: sts:AssumeRole
-            ManagedPolicyArns:
-                - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-
-    PreTokenGenerationLambda:
-        Type: AWS::Lambda::Function
-        Properties:
-            FunctionName: RealCalendarPreTokenGeneration
-            Runtime: nodejs20.x
-            Handler: pre-token-generation.handler
-            Role: !GetAtt PreTokenGenerationLambdaRole.Arn
-            Code:
-                ZipFile: |
-                    exports.handler = async (event) => {
-                      console.log("Pre Token Generation Event:", JSON.stringify(event));
-                      if (event.triggerSource === "TokenGeneration_HostedAuth" ||
-                          event.triggerSource.startsWith("TokenGeneration")) {
-                        if (event.userAttributes.email) {
-                          event.response.claimsOverrideDetails = event.response.claimsOverrideDetails || {};
-                          event.response.claimsOverrideDetails.claimsToAddOrOverride = {
-                            email: event.userAttributes.email,
-                            username: event.userAttributes.preferred_username || event.userName
-                          };
-                        }
-                      }
-                      return event;
-                    };
-
-    LambdaInvokePermission:
-        Type: AWS::Lambda::Permission
-        Properties:
-            FunctionName: !Ref PreTokenGenerationLambda
-            Action: lambda:InvokeFunction
-            Principal: cognito-idp.amazonaws.com
-            SourceArn: !GetAtt RealCalendarUserPool.Arn
 
 Outputs:
-    UserPoolId:
-        Value: !Ref RealCalendarUserPool
+    PostgresEndpoint:
+        Value: !GetAtt PostgresDB.Endpoint.Address
         Export:
-            Name: RealCalendarUserPoolId
-    UserPoolClientId:
-        Value: !Ref RealCalendarUserPoolClient
-        Export:
-            Name: RealCalendarUserPoolClientId
+            Name: RealCalendarPostgresEndpoint

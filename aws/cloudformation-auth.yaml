@@ -1,0 +1,126 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Cognito User Pool + PreTokenGeneration Lambda for RealCalendar
+
+Parameters:
+    AuthLambdaRuntime:
+        Type: String
+        Default: nodejs20.x
+
+Resources:
+
+    ###################
+    # Cognito User Pool
+    ###################
+    RealCalendarUserPool:
+        Type: AWS::Cognito::UserPool
+        DeletionPolicy: Retain
+        UpdateReplacePolicy: Retain
+        Properties:
+            UserPoolName: RealCalendarUserPool
+            AutoVerifiedAttributes:
+                - email
+            UsernameAttributes:
+                - email
+            AccountRecoverySetting:
+                RecoveryMechanisms:
+                    - Name: verified_email
+                      Priority: 1
+            Policies:
+                PasswordPolicy:
+                    MinimumLength: 8
+                    RequireUppercase: true
+                    RequireLowercase: true
+                    RequireNumbers: true
+                    RequireSymbols: false
+            AdminCreateUserConfig:
+                AllowAdminCreateUserOnly: true
+            MfaConfiguration: "OFF"
+            LambdaConfig:
+                PreTokenGeneration: !GetAtt PreTokenGenerationLambda.Arn
+
+    ###################
+    # Cognito App Client
+    ###################
+    RealCalendarUserPoolClient:
+        Type: AWS::Cognito::UserPoolClient
+        Properties:
+            ClientName: RealCalendarUserPoolClient
+            UserPoolId: !Ref RealCalendarUserPool
+            GenerateSecret: false
+            ExplicitAuthFlows:
+                - ALLOW_ADMIN_USER_PASSWORD_AUTH
+
+    ###################
+    # Cognito User Pool Group
+    ###################
+    RealCalendarUserPoolAgentGroup:
+        Type: AWS::Cognito::UserPoolGroup
+        Properties:
+            GroupName: agent
+            UserPoolId: !Ref RealCalendarUserPool
+            Description: Real calendar agent group
+
+    ###################
+    # PreTokenGeneration Lambda Role
+    ###################
+    PreTokenGenerationLambdaRole:
+        Type: AWS::IAM::Role
+        Properties:
+            RoleName: RealCalendarPreTokenLambdaRole
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    - Effect: Allow
+                      Principal:
+                          Service:
+                              - lambda.amazonaws.com
+                      Action: sts:AssumeRole
+            ManagedPolicyArns:
+                - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+    ###################
+    # PreTokenGeneration Lambda
+    ###################
+    PreTokenGenerationLambda:
+        Type: AWS::Lambda::Function
+        Properties:
+            FunctionName: RealCalendarPreTokenGeneration
+            Runtime: !Ref AuthLambdaRuntime
+            Handler: pre-token-generation.handler
+            Role: !GetAtt PreTokenGenerationLambdaRole.Arn
+            Code:
+                ZipFile: |
+                    exports.handler = async (event) => {
+                      console.log("Pre Token Generation Event:", JSON.stringify(event));
+                      if (event.triggerSource.startsWith("TokenGeneration")) {
+                        if (event.userAttributes.email) {
+                          event.response.claimsOverrideDetails = event.response.claimsOverrideDetails || {};
+                          event.response.claimsOverrideDetails.claimsToAddOrOverride = {
+                            email: event.userAttributes.email,
+                            username: event.userAttributes.preferred_username || event.userName
+                          };
+                        }
+                      }
+                      return event;
+                    };
+
+    ###################
+    # Lambda Invoke Permission for Cognito
+    ###################
+    LambdaInvokePermission:
+        Type: AWS::Lambda::Permission
+        Properties:
+            FunctionName: !Ref PreTokenGenerationLambda
+            Action: lambda:InvokeFunction
+            Principal: cognito-idp.amazonaws.com
+            SourceArn: !GetAtt RealCalendarUserPool.Arn
+
+Outputs:
+    UserPoolId:
+        Value: !Ref RealCalendarUserPool
+        Export:
+            Name: RealCalendarUserPoolId
+    UserPoolClientId:
+        Value: !Ref RealCalendarUserPoolClient
+        Export:
+            Name: RealCalendarUserPoolClientId
