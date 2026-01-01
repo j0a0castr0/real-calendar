@@ -246,6 +246,8 @@ Resources:
             AdminCreateUserConfig:
                 AllowAdminCreateUserOnly: true
             MfaConfiguration: "OFF"
+            LambdaConfig:
+                PreTokenGeneration: !GetAtt PreTokenGenerationLambda.Arn
 
     RealCalendarUserPoolClient:
         Type: AWS::Cognito::UserPoolClient
@@ -262,6 +264,45 @@ Resources:
             GroupName: agent
             UserPoolId: !Ref RealCalendarUserPool
             Description: Real calendar agent group
+
+    PreTokenGenerationLambdaRole:
+        Type: AWS::IAM::Role
+        Properties:
+            RoleName: RealCalendarPreTokenLambdaRole
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -   Effect: Allow
+                        Principal:
+                            Service:
+                                - lambda.amazonaws.com
+                        Action: sts:AssumeRole
+            ManagedPolicyArns:
+                - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+    PreTokenGenerationLambda:
+        Type: AWS::Lambda::Function
+        Properties:
+            FunctionName: RealCalendarPreTokenGeneration
+            Runtime: nodejs20.x
+            Handler: pre-token-generation.handler
+            Role: !GetAtt PreTokenGenerationLambdaRole.Arn
+            Code:
+                ZipFile: |
+                    exports.handler = async (event) => {
+                      console.log("Pre Token Generation Event:", JSON.stringify(event));
+                      if (event.triggerSource === "TokenGeneration_HostedAuth" ||
+                          event.triggerSource.startsWith("TokenGeneration")) {
+                        if (event.userAttributes.email) {
+                          event.response.claimsOverrideDetails = event.response.claimsOverrideDetails || {};
+                          event.response.claimsOverrideDetails.claimsToAddOrOverride = {
+                            email: event.userAttributes.email,
+                            username: event.userAttributes.preferred_username || event.userName
+                          };
+                        }
+                      }
+                      return event;
+                    };
 
 Outputs:
     UserPoolId:

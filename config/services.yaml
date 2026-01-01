@@ -30,6 +30,7 @@ services:
             $cache: '@cache.app'
             $region: '%env(default:dummy:COGNITO_REGION)%'
             $userPoolId: '%env(default:dummy:COGNITO_USER_POOL_ID)%'
+            $expectedAudience: '%env(default:dummy:COGNITO_CLIENT_ID)%'
     App\Shared\Validator\JWTValidatorInterface:
         alias: App\AuthContext\Validator\CognitoJWTValidator
 
