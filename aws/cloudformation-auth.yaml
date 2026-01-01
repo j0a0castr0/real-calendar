@@ -86,7 +86,7 @@ Resources:
         Properties:
             FunctionName: RealCalendarPreTokenGeneration
             Runtime: !Ref AuthLambdaRuntime
-            Handler: pre-token-generation.handler
+            Handler: index.handler
             Role: !GetAtt PreTokenGenerationLambdaRole.Arn
             Code:
                 ZipFile: |
