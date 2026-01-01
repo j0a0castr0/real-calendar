@@ -304,6 +304,14 @@ Resources:
                       return event;
                     };
 
+    LambdaInvokePermission:
+        Type: AWS::Lambda::Permission
+        Properties:
+            FunctionName: !Ref PreTokenGenerationLambda
+            Action: lambda:InvokeFunction
+            Principal: cognito-idp.amazonaws.com
+            SourceArn: !GetAtt RealCalendarUserPool.Arn
+
 Outputs:
     UserPoolId:
         Value: !Ref RealCalendarUserPool
