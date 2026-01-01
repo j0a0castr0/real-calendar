@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: ECS + RDS stack for RealCalendar API
+Description: Production-ready ECS Fargate + real-calendar API + RDS
 
 Parameters:
     VpcCidr:
@@ -32,6 +32,9 @@ Resources:
             CidrBlock: !Ref VpcCidr
             EnableDnsSupport: true
             EnableDnsHostnames: true
+            Tags:
+                - Key: Name
+                  Value: real-calendar-api-vpc
 
     InternetGateway:
         Type: AWS::EC2::InternetGateway
@@ -48,6 +51,7 @@ Resources:
             VpcId: !Ref VPC
             CidrBlock: !Ref PublicSubnetCidr
             MapPublicIpOnLaunch: true
+            AvailabilityZone: !Select [0, !GetAZs '']
 
     PrivateSubnetA:
         Type: AWS::EC2::Subnet
@@ -62,6 +66,24 @@ Resources:
             VpcId: !Ref VPC
             CidrBlock: 10.0.3.0/24
             AvailabilityZone: !Select [ 1, !GetAZs '' ]
+
+    PublicRouteTable:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId: !Ref VPC
+
+    PublicRoute:
+        Type: AWS::EC2::Route
+        Properties:
+            RouteTableId: !Ref PublicRouteTable
+            DestinationCidrBlock: 0.0.0.0/0
+            GatewayId: !Ref InternetGateway
+
+    PublicSubnetRouteTableAssociation:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId: !Ref PublicSubnet
+            RouteTableId: !Ref PublicRouteTable
 
     ###################
     # Security Groups
@@ -107,6 +129,7 @@ Resources:
             MultiAZ: false
             PubliclyAccessible: false
             StorageType: gp3
+            DeletionProtection: true
 
     DBSubnetGroup:
         Type: AWS::RDS::DBSubnetGroup
@@ -123,11 +146,14 @@ Resources:
         Type: AWS::ECR::Repository
 
     ###################
-    # ECS Cluster & Execution Role
+    # ECS Cluster
     ###################
     ECSCluster:
         Type: AWS::ECS::Cluster
 
+    ###################
+    # ECS Task Execution Role
+    ###################
     ECSExecutionRole:
         Type: AWS::IAM::Role
         Properties:
@@ -198,9 +224,3 @@ Resources:
                         - !Ref PublicSubnet
                     SecurityGroups:
                         - !Ref ECSServiceSG
-
-Outputs:
-    PostgresEndpoint:
-        Value: !GetAtt PostgresDB.Endpoint.Address
-        Export:
-            Name: RealCalendarPostgresEndpoint
