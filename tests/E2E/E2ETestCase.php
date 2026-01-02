@@ -2,6 +2,8 @@
 
 namespace App\Tests\E2E;
 
+use App\Shared\Validator\InMemory\InMemoryJWTValidator;
+use App\Shared\Validator\JWTValidatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Lcobucci\JWT\Configuration;
@@ -19,10 +21,8 @@ abstract class E2ETestCase extends WebTestCase
     {
         parent::setUp();
 
-        // Create client (boots kernel automatically)
         $this->client = static::createClient();
 
-        // Reset database schema per test
         $this->resetDatabase();
     }
 
@@ -72,6 +72,7 @@ abstract class E2ETestCase extends WebTestCase
         $token = $this->getTestToken($email);
 
         $this->client->setServerParameter('HTTP_AUTHORIZATION', 'Bearer ' . $token);
+        $this->client->setServerParameter('HTTP_X_ID_TOKEN', $token);
         $this->client->jsonRequest($method, $uri, $data);
     }
 

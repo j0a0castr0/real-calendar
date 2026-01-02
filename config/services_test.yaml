@@ -3,13 +3,12 @@ services:
         autowire: true
         autoconfigure: true
 
-    # In-memory validator for tests
-    App\Shared\Validator\JWTValidatorInterface:
-        alias: App\Shared\Validator\InMemory\InMemoryJWTValidator
-
-    # Optional: override CognitoJWTValidator arguments so container builds
     App\AuthContext\Validator\CognitoJWTValidator:
-        public: false
+        class: App\Shared\Validator\InMemory\InMemoryJWTValidator
+        public: true
+
+    App\Shared\Validator\JWTValidatorInterface:
+        alias: App\AuthContext\Validator\CognitoJWTValidator
 
     # Optional: AuthController dummy arguments
     App\AuthContext\Controller\AuthController:

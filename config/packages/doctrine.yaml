@@ -33,6 +33,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/RealCalendarContext/Infrastructure/ReadModel/ListingSlots/Doctrine/Entity'
                 prefix: 'App\RealCalendarContext\Infrastructure\ReadModel\ListingSlots\Doctrine\Entity'
                 alias: ListingReadModel
+            VisitReadModel:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/RealCalendarContext/Infrastructure/ReadModel/Visit/Doctrine/Entity'
+                prefix: 'App\RealCalendarContext\Infrastructure\ReadModel\Visit\Doctrine\Entity'
+                alias: VisitReadModel
         controller_resolver:
             auto_mapping: false
 

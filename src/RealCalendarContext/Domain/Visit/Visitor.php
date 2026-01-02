@@ -35,4 +35,14 @@ class Visitor
             'contact' => $this->contact->serialize(),
         ];
     }
+
+    public function nameAsString() : string
+    {
+        return (string) $this->name;
+    }
+
+    public function contact() : Contact
+    {
+        return $this->contact;
+    }
 }

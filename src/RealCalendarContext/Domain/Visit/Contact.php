@@ -24,4 +24,14 @@ final class Contact
             'email' => (string) $this->email,
         ];
     }
+
+    public function phone(): Phone
+    {
+        return $this->phone;
+    }
+
+    public function email(): Email
+    {
+        return $this->email;
+    }
 }
