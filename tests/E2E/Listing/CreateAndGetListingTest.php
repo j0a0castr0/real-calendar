@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Tests\E2E;
+namespace App\Tests\E2E\Listing;
 
+use App\Tests\E2E\E2ETestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 class CreateAndGetListingTest extends E2ETestCase
