@@ -21,15 +21,23 @@ class VisitWasScheduled extends AbstractDomainEvent
     {
         return [
             'aggregate_id' => (string) $this->aggregateId(),
-            'listingId' => (string) $this->listingId,
+            'listing_id' => (string) $this->listingId,
             'visitor' => $this->visitor->serialize(),
-            'visitTime' => $this->visitTime->serialize(),
+            'visit_time' => $this->visitTime->serialize(),
         ];
     }
 
     public static function deserialize(array $serialized): DomainEvent
     {
-        // TODO: Implement deserialize() method.
+        $self = new self(
+            new AggregateId($serialized['aggregate_id']),
+            new ListingId($serialized['listing_id']),
+            Visitor::deserialize($serialized['visitor']),
+            VisitTime::deserialize($serialized['visit_time']),
+        );
+        $self->occurredAt = new \DateTimeImmutable($serialized['occurred_at']);
+
+        return $self;
     }
 
     public function listingId(): ListingId

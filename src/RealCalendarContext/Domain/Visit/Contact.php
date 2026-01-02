@@ -9,6 +9,14 @@ final class Contact
         private Email $email
     ) { }
 
+    public static function deserialize(array $contact) : self
+    {
+        return new self(
+            new Phone($contact['phone']),
+            new Email($contact['email']),
+        );
+    }
+
     public function serialize(): array
     {
         return [

@@ -20,6 +20,14 @@ class Visitor
         );
     }
 
+    public static function deserialize(array $visitor) : self
+    {
+        return new self(
+            new Name($visitor['name']),
+            Contact::deserialize($visitor['contact']),
+        );
+    }
+
     public function serialize() : array
     {
         return [

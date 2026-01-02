@@ -23,6 +23,6 @@ final class Phone
 
     public function __toString(): string
     {
-        return $this->$phone;
+        return $this->phone;
     }
 }

@@ -11,10 +11,17 @@ final class VisitTime
         return new self($value);
     }
 
+    public static function deserialize(array $serialized) : self
+    {
+        return new self(
+            \DateTimeImmutable::createFromFormat('c', $serialized['starts_at'])
+        );
+    }
+
     public function serialize(): array
     {
         return [
-            'startsAt' => $this->value->format('c'),
+            'starts_at' => $this->value->format('c'),
         ];
     }
 }
