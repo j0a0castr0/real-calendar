@@ -21,4 +21,15 @@ final class ListingReadModelDoctrine implements ListingReadModel
             $listingDto->agent,
         ), $listingsDto);
     }
+
+    public function get(string $id): Listing
+    {
+        $listingDto = $this->em->getRepository(ListingDoctrineDTO::class)->find($id);
+
+        return new Listing(
+            $listingDto->id,
+            $listingDto->propertyReference,
+            $listingDto->agent,
+        );
+    }
 }

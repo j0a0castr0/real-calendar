@@ -27,14 +27,14 @@ final class EventSourcedVisitRepository implements VisitRepository
         return Visit::reconstitute($id, $events);
     }
 
-    public function save(Visit $listing): void
+    public function save(Visit $visit): void
     {
-        $events = $listing->popRecordedEvents();
+        $events = $visit->popRecordedEvents();
         if (empty($events)) return;
 
-        $expectedVersion = $listing->version() - count($events);
+        $expectedVersion = $visit->version() - count($events);
 
-        $this->eventStore->append((string)$listing->id(), $events, $expectedVersion);
+        $this->eventStore->append((string)$visit->id(), $events, $expectedVersion);
         foreach ($events as $event) {
             $this->messageBus->dispatch($event);
         }

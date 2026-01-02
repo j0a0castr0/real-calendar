@@ -173,4 +173,31 @@ class ListingTest extends TestCase
         $events = $listing->popRecordedEvents();
         $this->assertEmpty($events);
     }
+
+    #[Test]
+    public function itSholdBePossibleToAddConsecutiveSlots() : void
+    {
+        $listing = Listing::create(
+            new PropertyReference("some-reference"),
+            new Agent("some-agent"),
+        );
+
+
+        $listing->addAvailabilitySlot(
+            new Slot(
+                (new \DateTimeImmutable('2025-12-24'))->modify('+1 hour'),
+                (new \DateTimeImmutable('2025-12-24'))->modify('+2 hour')
+            )
+        );
+
+        $listing->addAvailabilitySlot(
+            new Slot(
+                (new \DateTimeImmutable('2025-12-24'))->modify('+2 hour'),
+                (new \DateTimeImmutable('2025-12-24'))->modify('+3 hour')
+            )
+        );
+
+        $this->assertTrue(true);
+        $this->assertCount(3, $listing->popRecordedEvents());
+    }
 }

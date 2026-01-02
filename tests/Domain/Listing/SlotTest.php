@@ -45,4 +45,52 @@ class SlotTest extends TestCase
             )
         );
     }
+
+    #[Test]
+    public function itShouldBeEqualSlotsIfExactSameTimesTillTheMinute() :  void
+    {
+        $slot = new Slot(
+            (new \DateTimeImmutable())->modify('+1 hour'),
+            (new \DateTimeImmutable())->modify('+2 hour')
+        );
+
+        $slot2 = new Slot(
+            (new \DateTimeImmutable())->modify('+1 hour'),
+            (new \DateTimeImmutable())->modify('+2 hour')
+        );
+
+        $this->assertTrue($slot->equals($slot2));
+    }
+
+    #[Test]
+    public function itShouldNotBeEqualSlotsIfDifferentMinutes() :  void
+    {
+        $slot = new Slot(
+            (new \DateTimeImmutable())->modify('+1 hour'),
+            (new \DateTimeImmutable())->modify('+2 hour')
+        );
+
+        $slot2 = new Slot(
+            (new \DateTimeImmutable())->modify('+1 hour 1 minute'),
+            (new \DateTimeImmutable())->modify('+2 hour')
+        );
+
+        $this->assertFalse($slot->equals($slot2));
+    }
+
+    #[Test]
+    public function itShouldNotEqualSlotsIfOnlySecondsAreDifferent() :  void
+    {
+        $slot = new Slot(
+            (new \DateTimeImmutable())->modify('+1 hour'),
+            (new \DateTimeImmutable())->modify('+2 hour')
+        );
+
+        $slot2 = new Slot(
+            (new \DateTimeImmutable())->modify('+1 hour 2 seconds'),
+            (new \DateTimeImmutable())->modify('+2 hour')
+        );
+
+        $this->assertTrue($slot->equals($slot2));
+    }
 }

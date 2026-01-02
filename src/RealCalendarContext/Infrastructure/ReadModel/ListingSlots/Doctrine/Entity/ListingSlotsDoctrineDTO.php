@@ -16,9 +16,6 @@ class ListingSlotsDoctrineDTO
     #[ORM\Column(type: 'string')]
     public string $listingId;
 
-    #[ORM\Column(type: 'string')]
-    public string $agent;
-
     #[ORM\Column(name: 'from_date', type: 'datetime_immutable')]
     public ?\DateTimeImmutable $from;
 

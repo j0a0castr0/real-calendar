@@ -34,7 +34,10 @@ final class ScheduleVisitCommandHandler
         } catch (\InvalidArgumentException $e) {
             return CommandResult::domainError($e->getMessage());
         } catch (\Exception $e) {
-            $this->logger->error('Failed to add availability slot', ['exception' => $e]);
+            $this->logger->error(
+                sprintf('[ScheduleVisitCommand ]Something went wrong: %s %s', $e->getMessage(), $e->getTraceAsString()),
+                ['exception' => $e
+            ]);
             return CommandResult::failure($e->getMessage());
         }
     }

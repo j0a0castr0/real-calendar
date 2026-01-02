@@ -15,7 +15,7 @@ final class AddAvailabilitySlotController extends AbstractController
     public function __construct(private readonly AddAvailabilitySlotCommandHandler $handler) {}
 
     #[Route('/listing/{id}/availability', methods: ['POST', 'OPTIONS'])]
-    public function index(Request $request, string $id, string $_agentEmail): JsonResponse
+    public function index(Request $request, string $id): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 

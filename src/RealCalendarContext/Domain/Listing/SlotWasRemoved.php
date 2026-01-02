@@ -8,16 +8,30 @@ use App\RealCalendarContext\Domain\DomainEvent;
 
 class SlotWasRemoved extends AbstractDomainEvent
 {
-    public function __construct(AggregateId $id, private \DateTimeImmutable $date)
-    {
+    public function __construct(
+        AggregateId $id,
+        private Slot $removedSlot,
+        private Availabilty $currentAvailability,
+    ) {
         parent::__construct($id);
+    }
+
+    public function removedSlot(): Slot
+    {
+        return $this->removedSlot;
+    }
+
+    public function currentAvailability(): Availabilty
+    {
+        return $this->currentAvailability;
     }
 
     public function serialize(): array
     {
         return [
             'aggregate_id' => (string) $this->aggregateId(),
-            'date' => $this->date->format('c'),
+            'removed_slot' => $this->removedSlot->serialize(),
+            'current_availability' => $this->currentAvailability->serialize(),
             'occurred_at' => $this->occurredAt()->format('c'),
         ];
     }
@@ -25,13 +39,9 @@ class SlotWasRemoved extends AbstractDomainEvent
     public static function deserialize(array $serialized): DomainEvent
     {
         return new self(
-            AggregateId::fromString($serialized['aggregate_id']),
-            new \DateTimeImmutable($serialized['date'])
+            new AggregateId($serialized['aggregate_id']),
+            Slot::deserialize($serialized['removed_slot']),
+            Availabilty::deserialize($serialized['current_availability']),
         );
-    }
-
-    public function date(): \DateTimeImmutable
-    {
-        return $this->date;
     }
 }

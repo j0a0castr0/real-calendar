@@ -24,4 +24,9 @@ final class VisitTime
             'starts_at' => $this->value->format('c'),
         ];
     }
+
+    public function value(): \DateTimeImmutable
+    {
+        return $this->value;
+    }
 }

@@ -35,4 +35,27 @@ final class Slot
             throw new \InvalidArgumentException('Slot start and end times must be on the same day.');
         }
     }
+
+    public function serialize(): array
+    {
+        return [
+            'from' => $this->from->format('c'),
+            'to' => $this->to->format('c'),
+        ];
+    }
+
+    public static function deserialize(array $serialized): self
+    {
+        return new self(
+            new \DateTimeImmutable($serialized['from']),
+            new \DateTimeImmutable($serialized['to']),
+        );
+    }
+
+    public function equals(Slot $that) : bool
+    {
+        return
+            $this->from->format('Y-m-d H:i') === $that->from->format('Y-m-d H:i')
+            && $this->to->format('Y-m-d H:i') === $that->to->format('Y-m-d H:i');
+    }
 }
