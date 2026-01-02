@@ -16,9 +16,9 @@ class GetListingsController extends AbstractController
 
     #[Route('/listing', methods: ['GET', 'OPTIONS'])]
     #[IsAuthenticated]
-    public function index(string $_agentEmail): JsonResponse
+    public function index(string $agentEmail): JsonResponse
     {
-        $listings = $this->handler->handle(new GetListingsQuery());
+        $listings = $this->handler->handle(new GetListingsQuery($agentEmail));
 
         return $this->json(array_map(fn(Listing $listing) => $listing->toArray(), $listings));
     }

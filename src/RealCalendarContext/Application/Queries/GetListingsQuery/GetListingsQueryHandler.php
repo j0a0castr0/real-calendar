@@ -14,6 +14,6 @@ final class GetListingsQueryHandler
      */
     public function handle(GetListingsQuery $query) : array
     {
-        return $this->listingReadModel->getAll();
+        return $this->listingReadModel->getAllForAgent($query->agent);
     }
 }

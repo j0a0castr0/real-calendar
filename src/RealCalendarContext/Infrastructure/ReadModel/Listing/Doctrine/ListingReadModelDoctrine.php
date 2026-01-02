@@ -11,9 +11,13 @@ final class ListingReadModelDoctrine implements ListingReadModel
 {
     public function __construct(private readonly EntityManagerInterface $em) {}
 
-    public function getAll(): array
+    public function getAllForAgent(string $agent): array
     {
-        $listingsDto = $this->em->getRepository(ListingDoctrineDTO::class)->findAll();
+        $listingsDto = $this->em->getRepository(ListingDoctrineDTO::class)->findBy(
+            [
+                'agent' => $agent,
+            ]
+        );
 
         return array_map(fn(ListingDoctrineDTO $listingDto) => new Listing(
             $listingDto->id,

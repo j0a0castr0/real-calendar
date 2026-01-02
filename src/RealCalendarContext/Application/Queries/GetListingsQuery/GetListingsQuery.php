@@ -7,4 +7,7 @@ namespace App\RealCalendarContext\Application\Queries\GetListingsQuery;
  */
 final class GetListingsQuery
 {
+    public function __construct(public string $agent)
+    {
+    }
 }

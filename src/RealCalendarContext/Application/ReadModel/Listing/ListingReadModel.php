@@ -7,7 +7,7 @@ interface ListingReadModel
     /**
      * @return Listing[]
      */
-    public function getAll() :array;
+    public function getAllForAgent(string $agent) :array;
 
     public function get(string $id): Listing;
 }

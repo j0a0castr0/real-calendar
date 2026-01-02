@@ -15,16 +15,16 @@ final class CreateListingController extends AbstractController
     public function __construct(private readonly CreateListingCommandHandler $handler) {}
 
     #[Route('/listing', methods: ['POST', 'OPTIONS'])]
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, string $agentEmail): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        if (!isset($data['propertyReference'], $data['agent'])) {
-            return $this->json(['error' => 'Missing propertyReference or agent fields'], 400);
+        if (!isset($data['propertyReference'])) {
+            return $this->json(['error' => 'Missing propertyReference fields'], 400);
         }
 
         $result = $this->handler->handle(new CreateListingCommand(
             $data['propertyReference'],
-            $data['agent'],
+            $agentEmail,
         ));
 
         return match ($result->type()) {
