@@ -12,6 +12,7 @@ final class ScheduleVisitCommand
         public readonly string $visitorName,
         public readonly string $visitorPhone,
         public readonly string $visitorEmail,
-        public readonly \DateTimeImmutable $visitTime
+        public readonly \DateTimeImmutable $visitStartTime,
+        public readonly \DateTimeImmutable $visitEndTime
     ) {}
 }

@@ -46,7 +46,8 @@ final class VisitProjection
         $visit->visitorEmail = (string) $event->visitor()->contact()->email();
         $visit->visitorPhone = (string) $event->visitor()->contact()->phone();
 
-        $visit->visitTime = $event->visitTime()->value();
+        $visit->visitStartTime = $event->visitTime()->start();
+        $visit->visitEndTime = $event->visitTime()->end();
 
         $this->em->persist($visit);
         $this->em->flush();

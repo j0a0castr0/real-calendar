@@ -28,5 +28,8 @@ class VisitDoctrineDTO
     public string $visitorPhone;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    public \DateTimeImmutable $visitTime;
+    public \DateTimeImmutable $visitStartTime;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    public \DateTimeImmutable $visitEndTime;
 }

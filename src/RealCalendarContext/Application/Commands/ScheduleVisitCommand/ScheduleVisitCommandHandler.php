@@ -24,7 +24,7 @@ final class ScheduleVisitCommandHandler
             $visit = Visit::schedule(
                 new ListingId($command->listingId),
                 Visitor::createFromValues($command->visitorName, $command->visitorPhone, $command->visitorEmail),
-                VisitTime::startingAt($command->visitTime)
+                VisitTime::between($command->visitStartTime, $command->visitEndTime)
             );
             $this->visitRepository->save($visit);
 

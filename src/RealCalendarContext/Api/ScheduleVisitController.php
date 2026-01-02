@@ -28,7 +28,8 @@ final class ScheduleVisitController extends AbstractController
         }
 
         try {
-            $visitTime = new \DateTimeImmutable($data['visitTime']);
+            $visitStartTime = new \DateTimeImmutable($data['visitStartTime']);
+            $visitEndTime = new \DateTimeImmutable($data['visitEndTime']);
         } catch (\Exception $e) {
             return $this->json(['error' => 'Invalid date format'], 400);
         }
@@ -38,7 +39,8 @@ final class ScheduleVisitController extends AbstractController
             $data['visitorName'],
             $data['visitorPhone'],
             $data['visitorEmail'],
-            $visitTime
+            $visitStartTime,
+            $visitEndTime
         ));
 
         return match ($result->type()) {

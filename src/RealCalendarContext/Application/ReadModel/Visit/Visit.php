@@ -11,7 +11,8 @@ final class Visit
         public readonly string $visitorName,
         public readonly string $visitorEmail,
         public readonly ?string $visitorPhone,
-        public readonly \DateTimeImmutable $visitTime,
+        public readonly \DateTimeImmutable $visitStartTime,
+        public readonly \DateTimeImmutable $visitEndTime
     ) {}
 
     public function toArray(): array
@@ -23,7 +24,8 @@ final class Visit
             'visitorName' => $this->visitorName,
             'visitorEmail' => $this->visitorEmail,
             'visitorPhone' => $this->visitorPhone,
-            'visitTime' => $this->visitTime->format('c'),
+            'visitStartTime' => $this->visitStartTime->format('c'),
+            'visitEndTime' => $this->visitEndTime->format('c'),
         ];
     }
 }

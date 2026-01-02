@@ -28,7 +28,8 @@ final class VisitReadModelDoctrine implements VisitReadModel
                 $visitDto->visitorName,
                 $visitDto->visitorEmail,
                 $visitDto->visitorPhone,
-                $visitDto->visitTime
+                $visitDto->visitStartTime,
+                $visitDto->visitEndTime
             ),
             $visitsDto
         );

@@ -25,11 +25,11 @@ final class MakeSlotUnavailableWhenVisitScheduled
             $listing = $this->listingRepository->get(new AggregateId($event->listingId()));
 
             $listing->removeSlot(
-                $event->visitTime()->value()
+                $event->visitTime()->start()
             );
 
             $this->listingRepository->save($listing);
-            
+
         } catch (ListingWasNotFoundException $e) {
             $this->logger->error(sprintf("[MakeSlotUnavailableWhenVisitScheduled] Listing %s not found ", (string) $event->aggregateId()));
         }

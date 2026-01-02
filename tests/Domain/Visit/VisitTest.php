@@ -20,7 +20,7 @@ class VisitTest extends TestCase
         $visit = Visit::schedule(
             new ListingId("some-listing"),
             Visitor::createFromValues("John Doe", "1234567890", "john.doe@example.com"),
-            VisitTime::startingAt(new \DateTimeImmutable('2023-01-01'))
+            VisitTime::between(new \DateTimeImmutable('2023-01-01'))
         );
 
         $events = $visit->popRecordedEvents();
