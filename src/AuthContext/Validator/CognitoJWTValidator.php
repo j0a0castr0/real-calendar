@@ -16,7 +16,6 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Contracts\Cache\ItemInterface;
-use DateTimeZone;
 
 class CognitoJWTValidator implements JWTValidatorInterface
 {
@@ -42,7 +41,14 @@ class CognitoJWTValidator implements JWTValidatorInterface
         );
     }
 
-    public function validate(string $jwt): array
+    /**
+     * Validate JWT (access or ID token)
+     *
+     * @param string $jwt
+     * @param string $expectedTokenUse "access" or "id"
+     * @return array ['username' => ..., 'email' => ..., 'sub' => ...]
+     */
+    public function validate(string $jwt, string $expectedTokenUse = 'access'): array
     {
         try {
             // Decode header to get kid
@@ -53,8 +59,11 @@ class CognitoJWTValidator implements JWTValidatorInterface
 
             $kid = $header['kid'];
 
+            // ✅ Sanitize cache key: use SHA256 hash of kid
+            $cacheKey = 'cognito_key_' . hash('sha256', $kid);
+
             // Get PEM from cache or fetch from Cognito
-            $publicKeyPem = $this->cache->get('cognito_key_' . $kid, function (ItemInterface $item) use ($kid) {
+            $publicKeyPem = $this->cache->get($cacheKey, function (ItemInterface $item) use ($kid) {
                 $item->expiresAfter(3600); // 1 hour cache
                 $jwks = json_decode(file_get_contents($this->jwksUrl), true);
 
@@ -67,7 +76,7 @@ class CognitoJWTValidator implements JWTValidatorInterface
                 throw new \RuntimeException('Public key not found for JWT kid: ' . $kid);
             });
 
-            // Lcobucci JWT v4: use same PEM for private/public because we only verify
+            // Lcobucci JWT v4
             $signer = new Sha256();
             $key = InMemory::plainText($publicKeyPem);
             $config = Configuration::forAsymmetricSigner($signer, $key, $key);
@@ -77,22 +86,22 @@ class CognitoJWTValidator implements JWTValidatorInterface
             // Constraints: signature + expiration
             $constraints = [
                 new SignedWith($signer, $key),
-                new LooseValidAt(SystemClock::fromUTC()), // checks exp and nbf loosely
+                new LooseValidAt(SystemClock::fromUTC()),
             ];
 
             if (!$config->validator()->validate($token, ...$constraints)) {
                 throw new \RuntimeException('Invalid token signature or expired');
             }
 
-            // Claims
             $claims = $token->claims();
 
-            // Cognito AccessToken must have "token_use" = "access" and correct audience
-            if ($claims->get('token_use') !== 'access') {
-                throw new \RuntimeException('Token is not an access token');
+            // Ensure token_use matches what we expect
+            if ($claims->get('token_use') !== $expectedTokenUse) {
+                throw new \RuntimeException('Token is not a ' . $expectedTokenUse . ' token');
             }
 
-            if ($claims->has('aud') && $claims->get('aud') !== $this->expectedAudience) {
+            // Optional audience check for access tokens
+            if ($expectedTokenUse === 'access' && $claims->has('aud') && $claims->get('aud') !== $this->expectedAudience) {
                 throw new \RuntimeException('Token audience mismatch');
             }
 
@@ -101,7 +110,7 @@ class CognitoJWTValidator implements JWTValidatorInterface
                 'email' => $claims->get('email'),
                 'sub' => $claims->get('sub'),
             ];
-        } catch (\Throwable $e) {var_dump($e->getMessage()); die("s");
+        } catch (\Throwable $e) {
             $this->logger->warning('JWT validation failed: ' . $e->getMessage());
             throw new AccessDeniedHttpException('Invalid token', $e);
         }

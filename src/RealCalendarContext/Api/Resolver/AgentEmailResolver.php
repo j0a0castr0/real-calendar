@@ -19,29 +19,28 @@ class AgentEmailResolver implements ValueResolverInterface
 
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
-        $authHeader = $request->headers->get('Authorization');
+        // ✅ Read ID token, not Authorization header
+        $idToken = $request->headers->get('X-ID-Token');
 
-        // Optional: if the route allows public access, return null
         $isOptional = $argument->getAttributes()['optional'] ?? false;
 
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+        if (!$idToken) {
             if ($isOptional) {
                 yield null; // public route → no email
                 return;
             }
-            throw new AccessDeniedHttpException('Missing token');
+            throw new AccessDeniedHttpException('Missing ID token');
         }
 
-        $jwt = substr($authHeader, 7);
-
         try {
-            $data = $this->validator->validate($jwt);
-            yield $data['email'];
+            // ✅ Validate as ID token
+            $data = $this->validator->validate($idToken, 'id');
+            yield $data['email']; // now correctly from ID token
         } catch (\Throwable $e) {
             if ($isOptional) {
                 yield null;
             } else {
-                throw new AccessDeniedHttpException('Invalid token');
+                throw new AccessDeniedHttpException('Invalid ID token');
             }
         }
     }

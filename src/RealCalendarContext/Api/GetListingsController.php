@@ -2,6 +2,7 @@
 
 namespace App\RealCalendarContext\Api;
 
+use App\AuthContext\Security\Attribute\IsAuthenticated;
 use App\RealCalendarContext\Application\Queries\GetListingsQuery\GetListingsQuery;
 use App\RealCalendarContext\Application\Queries\GetListingsQuery\GetListingsQueryHandler;
 use App\RealCalendarContext\Application\ReadModel\Listing\Listing;
@@ -14,6 +15,7 @@ class GetListingsController extends AbstractController
     public function __construct(private GetListingsQueryHandler $handler) {}
 
     #[Route('/listing', methods: ['GET', 'OPTIONS'])]
+    #[IsAuthenticated]
     public function index(string $_agentEmail): JsonResponse
     {
         $listings = $this->handler->handle(new GetListingsQuery());

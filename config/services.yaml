@@ -31,6 +31,9 @@ services:
             $region: '%env(default:dummy:COGNITO_REGION)%'
             $userPoolId: '%env(default:dummy:COGNITO_USER_POOL_ID)%'
             $expectedAudience: '%env(default:dummy:COGNITO_CLIENT_ID)%'
+    App\AuthContext\Security\AuthAttributeSubscriber:
+        tags:
+            - { name: 'kernel.event_subscriber' }
     App\Shared\Validator\JWTValidatorInterface:
         alias: App\AuthContext\Validator\CognitoJWTValidator
 
