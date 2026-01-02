@@ -37,6 +37,14 @@ final class Listing extends AggregateRoot
         $this->raise(new AvailabilitySlotWasAdded($this->id, $slot, $this->agent));
     }
 
+    public function removeSlot(\DateTimeImmutable $date) : void
+    {
+        if ($this->availability->isThereSlotStartingAt($date) === false)
+            return;
+
+        $this->raise(new SlotWasRemoved($this->id, $date));
+    }
+
     protected function applyListingWasCreated(ListingWasCreated $event): void
     {
         $this->id = $event->aggregateId();
@@ -48,5 +56,10 @@ final class Listing extends AggregateRoot
     protected function applyAvailabilitySlotWasAdded(AvailabilitySlotWasAdded $event): void
     {
         $this->availability = $this->availability->add($event->slot());
+    }
+
+    protected function applySlotWasRemoved(SlotWasRemoved $event): void
+    {
+        $this->availability = $this->availability->remove($event->date());
     }
 }

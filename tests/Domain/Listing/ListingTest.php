@@ -9,6 +9,7 @@ use App\RealCalendarContext\Domain\Listing\Listing;
 use App\RealCalendarContext\Domain\Listing\ListingWasCreated;
 use App\RealCalendarContext\Domain\Listing\PropertyReference;
 use App\RealCalendarContext\Domain\Listing\Slot;
+use App\RealCalendarContext\Domain\Listing\SlotWasRemoved;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -112,5 +113,64 @@ class ListingTest extends TestCase
                 (new \DateTimeImmutable('2025-12-24'))->modify('+24 hour 30 minutes')
             )
         );
+    }
+
+    #[Test]
+    public function itShouldRemoveTheSlateForThisDate() : void
+    {
+        $listing = Listing::create(
+            new PropertyReference("some-reference"),
+            new Agent("some-agent"),
+        );
+        $listing->addAvailabilitySlot(
+            new Slot(
+                $startTime = (new \DateTimeImmutable('2025-12-24'))->modify('+1 hour'),
+                (new \DateTimeImmutable('2025-12-24'))->modify('+2 hour')
+            )
+        );
+        $listing->addAvailabilitySlot(
+            new Slot(
+                (new \DateTimeImmutable('2025-12-24'))->modify('+3 hour'),
+                (new \DateTimeImmutable('2025-12-24'))->modify('+4 hour')
+            )
+        );
+        $listing->popRecordedEvents();
+
+        $listing->removeSlot(
+            $startTime
+        );
+
+        $events = $listing->popRecordedEvents();
+        $this->assertNotEmpty($events);
+        $this->assertInstanceOf(SlotWasRemoved::class, $events[0]);
+    }
+
+    #[Test]
+    public function itShouldDoNothingWhenRemovingASlotItDoesntExist() : void
+    {
+        $listing = Listing::create(
+            new PropertyReference("some-reference"),
+            new Agent("some-agent"),
+        );
+        $listing->addAvailabilitySlot(
+            new Slot(
+                (new \DateTimeImmutable('2025-12-24'))->modify('+1 hour'),
+                (new \DateTimeImmutable('2025-12-24'))->modify('+2 hour')
+            )
+        );
+        $listing->addAvailabilitySlot(
+            new Slot(
+                (new \DateTimeImmutable('2025-12-24'))->modify('+3 hour'),
+                (new \DateTimeImmutable('2025-12-24'))->modify('+4 hour')
+            )
+        );
+        $listing->popRecordedEvents();
+
+        $listing->removeSlot(
+            (new \DateTimeImmutable('2025-12-24'))->modify('+5 hour'),
+        );
+
+        $events = $listing->popRecordedEvents();
+        $this->assertEmpty($events);
     }
 }

@@ -16,7 +16,7 @@ final class GetListingSlotsController extends AbstractController
     ) {}
 
     #[Route('/listing/{id}/slots', methods: ['GET', 'OPTIONS'])]
-    public function index(string $id, string $_agentEmail): JsonResponse
+    public function index(string $id): JsonResponse
     {
         $slots = $this->handler->handle(new GetListingSlotsQuery($id));
 
