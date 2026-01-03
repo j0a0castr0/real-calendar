@@ -273,9 +273,12 @@ Resources:
                     SecurityGroups:
                         - !Ref ECSServiceSG
             LoadBalancers:
-                - ContainerName: real-calendar-api
-                  ContainerPort: 80
-                  TargetGroupArn: !Ref TargetGroup
+                -   ContainerName: real-calendar-api
+                    ContainerPort: 80
+                    TargetGroupArn: !Ref TargetGroup
+            DeploymentConfiguration:
+                MaximumPercent: 200
+                MinimumHealthyPercent: 100
 
     ###################
     # ALB
@@ -289,7 +292,7 @@ Resources:
                 - !Ref PublicSubnet
                 - !Ref PublicSubnetB
             SecurityGroups:
-                - !Ref ECSServiceSG  # can make a separate SG if you want
+                - !Ref ECSServiceSG
 
     TargetGroup:
         Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -300,6 +303,10 @@ Resources:
             VpcId: !Ref VPC
             TargetType: ip   # Fargate tasks use IP targets
             HealthCheckPath: /health
+            HealthCheckIntervalSeconds: 10
+            HealthCheckTimeoutSeconds: 5
+            HealthyThresholdCount: 2
+            UnhealthyThresholdCount: 2
 
     Listener:
         Type: AWS::ElasticLoadBalancingV2::Listener
