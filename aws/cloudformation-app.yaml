@@ -96,6 +96,12 @@ Resources:
             SubnetId: !Ref PublicSubnet
             RouteTableId: !Ref PublicRouteTable
 
+    PublicSubnetBRouteTableAssociation:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId: !Ref PublicSubnetB
+            RouteTableId: !Ref PublicRouteTable
+
     ###################
     # Security Groups
     ###################
@@ -261,7 +267,7 @@ Resources:
         DependsOn: Listener
         Properties:
             Cluster: !Ref ECSCluster
-            DesiredCount: 1
+            DesiredCount: 2
             LaunchType: FARGATE
             TaskDefinition: !Ref ECSTaskDefinition
             NetworkConfiguration:
