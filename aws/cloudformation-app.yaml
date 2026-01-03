@@ -236,6 +236,23 @@ Resources:
             ManagedPolicyArns:
                 - arn:aws:iam::aws:policy/AmazonCognitoReadOnly
 
+    ECSTaskRolePolicy:
+        Type: AWS::IAM::Policy
+        Properties:
+            PolicyName: real-calendar-task-cognito
+            Roles:
+                - !Ref ECSTaskRole
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -   Effect: Allow
+                        Action:
+                            - cognito-idp:AdminInitiateAuth
+                            - cognito-idp:AdminGetUser
+                        Resource:
+                            - arn:aws:cognito-idp:eu-west-1:584711701186:userpool/eu-west-1_QpLdF0vLh
+
+
     ###################
     # ECS Service
     ###################
