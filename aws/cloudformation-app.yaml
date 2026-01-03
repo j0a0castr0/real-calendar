@@ -190,6 +190,7 @@ Resources:
             Memory: "1024"
             NetworkMode: awsvpc
             RequiresCompatibilities: ["FARGATE"]
+            TaskRoleArn: !Ref ECSTaskRole
             ExecutionRoleArn: !GetAtt ECSExecutionRole.Arn
             ContainerDefinitions:
                 - Name: real-calendar-api
@@ -217,6 +218,23 @@ Resources:
         Properties:
             LogGroupName: /ecs/real-calendar-api
             RetentionInDays: 14
+
+    ###################
+    # ECS Service
+    ###################
+    ECSTaskRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -   Effect: Allow
+                        Principal:
+                            Service:
+                                - ecs-tasks.amazonaws.com
+                        Action: sts:AssumeRole
+            ManagedPolicyArns:
+                - arn:aws:iam::aws:policy/AmazonCognitoReadOnly
 
     ###################
     # ECS Service
