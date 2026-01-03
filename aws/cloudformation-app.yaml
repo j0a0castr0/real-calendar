@@ -8,6 +8,9 @@ Parameters:
     PublicSubnetCidr:
         Type: String
         Default: 10.0.1.0/24
+    PublicSubnetBCidr:
+        Type: String
+        Default: 10.0.4.0/24
     PrivateSubnetCidr:
         Type: String
         Default: 10.0.2.0/24
@@ -52,6 +55,14 @@ Resources:
             CidrBlock: !Ref PublicSubnetCidr
             MapPublicIpOnLaunch: true
             AvailabilityZone: !Select [0, !GetAZs '']
+
+    PublicSubnetB:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            CidrBlock: !Ref PublicSubnetBCidr
+            MapPublicIpOnLaunch: true
+            AvailabilityZone: !Select [ 1, !GetAZs '' ]
 
     PrivateSubnetA:
         Type: AWS::EC2::Subnet
@@ -212,6 +223,7 @@ Resources:
     ###################
     ECSService:
         Type: AWS::ECS::Service
+        DependsOn: Listener
         Properties:
             Cluster: !Ref ECSCluster
             DesiredCount: 1
@@ -222,5 +234,49 @@ Resources:
                     AssignPublicIp: ENABLED
                     Subnets:
                         - !Ref PublicSubnet
+                        - !Ref PublicSubnetB
                     SecurityGroups:
                         - !Ref ECSServiceSG
+            LoadBalancers:
+                - ContainerName: real-calendar-api
+                  ContainerPort: 80
+                  TargetGroupArn: !Ref TargetGroup
+
+    ###################
+    # ALB
+    ###################
+    ALB:
+        Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+        Properties:
+            Name: real-calendar-api-alb
+            Scheme: internet-facing
+            Subnets:
+                - !Ref PublicSubnet
+                - !Ref PublicSubnetB
+            SecurityGroups:
+                - !Ref ECSServiceSG  # can make a separate SG if you want
+
+    TargetGroup:
+        Type: AWS::ElasticLoadBalancingV2::TargetGroup
+        Properties:
+            Name: real-calendar-api-tg
+            Port: 80
+            Protocol: HTTP
+            VpcId: !Ref VPC
+            TargetType: ip   # Fargate tasks use IP targets
+            HealthCheckPath: /health
+
+    Listener:
+        Type: AWS::ElasticLoadBalancingV2::Listener
+        Properties:
+            LoadBalancerArn: !Ref ALB
+            Port: 80
+            Protocol: HTTP
+            DefaultActions:
+                -   Type: forward
+                    TargetGroupArn: !Ref TargetGroup
+
+Outputs:
+    ApiEndpoint:
+        Description: Public API endpoint
+        Value: !GetAtt ALB.DNSName
