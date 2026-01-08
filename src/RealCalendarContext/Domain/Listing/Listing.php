@@ -2,8 +2,8 @@
 
 namespace App\RealCalendarContext\Domain\Listing;
 
-use App\RealCalendarContext\Domain\AggregateId;
-use App\RealCalendarContext\Domain\AggregateRoot;
+use App\Shared\Domain\AggregateId;
+use App\Shared\Domain\AggregateRoot;
 
 final class Listing extends AggregateRoot
 {

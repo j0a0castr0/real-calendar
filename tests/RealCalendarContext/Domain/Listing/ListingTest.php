@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Domain\Listing;
+namespace App\Tests\RealCalendarContext\Domain\Listing;
 
 use App\RealCalendarContext\Domain\Listing\Agent;
 use App\RealCalendarContext\Domain\Listing\AvailabilitySlotWasAdded;

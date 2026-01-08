@@ -2,7 +2,7 @@
 
 namespace App\RealCalendarContext\Domain\Listing;
 
-use App\RealCalendarContext\Domain\AggregateId;
+use App\Shared\Domain\AggregateId;
 
 final class CouldNotFindSlot extends \DomainException
 {

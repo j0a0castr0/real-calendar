@@ -3,7 +3,7 @@
 namespace App\RealCalendarContext\Infrastructure\EventStore\InMemory;
 
 use App\Infrastrucutre\EventStore\EventStore;
-use App\RealCalendarContext\Domain\DomainEvent;
+use App\Shared\Domain\DomainEvent;
 
 final class InMemoryEventStore implements EventStore
 {

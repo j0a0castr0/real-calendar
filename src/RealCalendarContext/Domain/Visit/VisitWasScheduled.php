@@ -2,9 +2,9 @@
 
 namespace App\RealCalendarContext\Domain\Visit;
 
-use App\RealCalendarContext\Domain\AbstractDomainEvent;
-use App\RealCalendarContext\Domain\AggregateId;
-use App\RealCalendarContext\Domain\DomainEvent;
+use App\Shared\Domain\AbstractDomainEvent;
+use App\Shared\Domain\AggregateId;
+use App\Shared\Domain\DomainEvent;
 
 class VisitWasScheduled extends AbstractDomainEvent
 {
@@ -27,7 +27,7 @@ class VisitWasScheduled extends AbstractDomainEvent
         ];
     }
 
-    public static function deserialize(array $serialized): DomainEvent
+    public static function deserialize(array $serialized): static
     {
         $self = new self(
             new AggregateId($serialized['aggregate_id']),

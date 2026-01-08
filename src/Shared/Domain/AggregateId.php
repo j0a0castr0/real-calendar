@@ -1,6 +1,6 @@
 <?php
 
-namespace App\RealCalendarContext\Domain;
+namespace App\Shared\Domain;
 
 use Ramsey\Uuid\Uuid;
 

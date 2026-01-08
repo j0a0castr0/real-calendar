@@ -1,6 +1,6 @@
 <?php
 
-namespace App\RealCalendarContext\Domain;
+namespace App\Shared\Domain;
 
 interface DomainEvent
 {
@@ -8,5 +8,6 @@ interface DomainEvent
     public function occurredAt(): \DateTimeImmutable;
     public function eventType(): string;
     public function serialize(): array;
-    public static function deserialize(array $serialized): DomainEvent;
+    public static function deserialize(array $serialized): static;
+    public static function schemaVersion(): int;
 }

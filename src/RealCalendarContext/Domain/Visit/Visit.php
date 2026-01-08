@@ -2,8 +2,8 @@
 
 namespace App\RealCalendarContext\Domain\Visit;
 
-use App\RealCalendarContext\Domain\AggregateId;
-use App\RealCalendarContext\Domain\AggregateRoot;
+use App\Shared\Domain\AggregateId;
+use App\Shared\Domain\AggregateRoot;
 
 class Visit extends AggregateRoot
 {

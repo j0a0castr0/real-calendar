@@ -2,11 +2,11 @@
 
 namespace App\RealCalendarContext\Infrastructure\Repository\Listing;
 
-use App\RealCalendarContext\Domain\AggregateId;
 use App\RealCalendarContext\Domain\Listing\Listing;
 use App\RealCalendarContext\Domain\Listing\ListingRepository;
 use App\RealCalendarContext\Domain\Listing\ListingWasNotFoundException;
-use App\RealCalendarContext\Infrastructure\EventStore\EventStore;
+use App\Shared\Domain\AggregateId;
+use App\Shared\Infrastructure\EventStore\EventStore;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 final class EventSourcedListingRepository implements ListingRepository

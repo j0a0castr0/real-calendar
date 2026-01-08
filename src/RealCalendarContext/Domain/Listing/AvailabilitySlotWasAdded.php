@@ -2,9 +2,9 @@
 
 namespace App\RealCalendarContext\Domain\Listing;
 
-use App\RealCalendarContext\Domain\AbstractDomainEvent;
-use App\RealCalendarContext\Domain\AggregateId;
-use App\RealCalendarContext\Domain\DomainEvent;
+use App\Shared\Domain\AbstractDomainEvent;
+use App\Shared\Domain\AggregateId;
+use App\Shared\Domain\DomainEvent;
 
 final class AvailabilitySlotWasAdded extends AbstractDomainEvent
 {
@@ -35,7 +35,7 @@ final class AvailabilitySlotWasAdded extends AbstractDomainEvent
         ];
     }
 
-    public static function deserialize(array $serialized): DomainEvent
+    public static function deserialize(array $serialized): static
     {
         $slot = new Slot(
             new \DateTimeImmutable($serialized['from']),

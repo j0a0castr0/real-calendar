@@ -1,8 +1,8 @@
 <?php
 
-namespace App\RealCalendarContext\Infrastructure\EventStore;
+namespace App\Shared\Infrastructure\EventStore;
 
-use App\RealCalendarContext\Domain\DomainEvent;
+use App\Shared\Domain\DomainEvent;
 
 interface EventStore
 {

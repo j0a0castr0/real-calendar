@@ -2,7 +2,7 @@
 
 namespace App\RealCalendarContext\Api\Resolver;
 
-use App\Shared\Validator\JWTValidatorInterface;
+use App\Shared\Api\Validator\JWTValidatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;

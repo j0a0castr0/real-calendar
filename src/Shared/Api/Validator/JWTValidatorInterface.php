@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Validator;
+namespace App\Shared\Api\Validator;
 
 interface JWTValidatorInterface
 {

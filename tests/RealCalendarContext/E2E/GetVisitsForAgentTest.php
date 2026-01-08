@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Tests\E2E;
+namespace App\Tests\RealCalendarContext\E2E;
 
+use App\Tests\Shared\E2ETestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class GetVisitsForAgentTest extends E2ETestCase

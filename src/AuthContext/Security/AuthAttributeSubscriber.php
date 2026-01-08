@@ -3,11 +3,11 @@
 namespace App\AuthContext\Security;
 
 use App\AuthContext\Security\Attribute\IsAuthenticated;
-use App\Shared\Validator\JWTValidatorInterface;
+use App\Shared\Api\Validator\JWTValidatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 final class AuthAttributeSubscriber implements EventSubscriberInterface
 {

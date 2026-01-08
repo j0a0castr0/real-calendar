@@ -2,7 +2,7 @@
 
 namespace App\RealCalendarContext\Domain\Visit;
 
-use App\RealCalendarContext\Domain\AggregateId;
+use App\Shared\Domain\AggregateId;
 
 interface VisitRepository
 {

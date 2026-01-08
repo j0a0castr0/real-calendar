@@ -16,7 +16,7 @@ framework:
 
         routing:
             # Route your messages to the transports
-            'App\RealCalendarContext\Domain\DomainEvent': sync
+            'App\Shared\Domain\DomainEvent': sync
 
 # when@test:
 #    framework:

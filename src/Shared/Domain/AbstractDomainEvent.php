@@ -1,6 +1,6 @@
 <?php
 
-namespace App\RealCalendarContext\Domain;
+namespace App\Shared\Domain;
 
 abstract class AbstractDomainEvent implements DomainEvent
 {
@@ -22,6 +22,11 @@ abstract class AbstractDomainEvent implements DomainEvent
     public function eventType(): string
     {
         return static::class;
+    }
+
+    public static function schemaVersion(): int
+    {
+        return 1;
     }
 }
 

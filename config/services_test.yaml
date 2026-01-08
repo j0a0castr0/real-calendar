@@ -4,10 +4,10 @@ services:
         autoconfigure: true
 
     App\AuthContext\Validator\CognitoJWTValidator:
-        class: App\Shared\Validator\InMemory\InMemoryJWTValidator
+        class: App\Shared\Api\Validator\InMemory\InMemoryJWTValidator
         public: true
 
-    App\Shared\Validator\JWTValidatorInterface:
+    App\Shared\Api\Validator\JWTValidatorInterface:
         alias: App\AuthContext\Validator\CognitoJWTValidator
 
     # Optional: AuthController dummy arguments

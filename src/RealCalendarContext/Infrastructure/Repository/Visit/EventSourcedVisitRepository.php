@@ -2,11 +2,11 @@
 
 namespace App\RealCalendarContext\Infrastructure\Repository\Visit;
 
-use App\RealCalendarContext\Domain\AggregateId;
 use App\RealCalendarContext\Domain\Visit\Visit;
 use App\RealCalendarContext\Domain\Visit\VisitRepository;
 use App\RealCalendarContext\Domain\Visit\VisitWasNotFoundException;
-use App\RealCalendarContext\Infrastructure\EventStore\EventStore;
+use App\Shared\Domain\AggregateId;
+use App\Shared\Infrastructure\EventStore\EventStore;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 final class EventSourcedVisitRepository implements VisitRepository

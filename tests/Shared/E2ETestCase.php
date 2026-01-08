@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Tests\E2E;
+namespace App\Tests\Shared;
 
-use App\Shared\Validator\InMemory\InMemoryJWTValidator;
-use App\Shared\Validator\JWTValidatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Builder;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

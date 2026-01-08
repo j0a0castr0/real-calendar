@@ -3,11 +3,11 @@
 namespace App\RealCalendarContext\Application\Commands\AddAvailabilitySlotCommand;
 
 use App\RealCalendarContext\Application\Commands\CommandResult;
-use App\RealCalendarContext\Domain\AggregateId;
 use App\RealCalendarContext\Domain\Listing\CouldNotAddAvailabilityToListing;
 use App\RealCalendarContext\Domain\Listing\ListingRepository;
 use App\RealCalendarContext\Domain\Listing\ListingWasNotFoundException;
 use App\RealCalendarContext\Domain\Listing\Slot;
+use App\Shared\Domain\AggregateId;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 

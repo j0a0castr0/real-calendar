@@ -34,7 +34,7 @@ services:
     App\AuthContext\Security\AuthAttributeSubscriber:
         tags:
             - { name: 'kernel.event_subscriber' }
-    App\Shared\Validator\JWTValidatorInterface:
+    App\Shared\Api\Validator\JWTValidatorInterface:
         alias: App\AuthContext\Validator\CognitoJWTValidator
 
     # add more service definitions when explicit configuration is needed

@@ -2,8 +2,8 @@
 
 namespace App\RealCalendarContext\Infrastructure\Repository;
 
-use App\RealCalendarContext\Domain\AggregateRoot;
-use App\RealCalendarContext\Infrastructure\EventStore\EventStore;
+use App\Shared\Domain\AggregateRoot;
+use App\Shared\Infrastructure\EventStore\EventStore;
 
 abstract class AbstractEventSourcedRepository
 {

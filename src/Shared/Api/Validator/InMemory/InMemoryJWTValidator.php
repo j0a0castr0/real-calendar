@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Shared\Validator\InMemory;
+namespace App\Shared\Api\Validator\InMemory;
 
-use App\Shared\Validator\JWTValidatorInterface;
+use App\Shared\Api\Validator\JWTValidatorInterface;
 
 final class InMemoryJWTValidator implements JWTValidatorInterface
 {

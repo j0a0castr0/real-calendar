@@ -2,9 +2,9 @@
 
 namespace App\RealCalendarContext\Domain\Listing;
 
-use App\RealCalendarContext\Domain\AbstractDomainEvent;
-use App\RealCalendarContext\Domain\AggregateId;
-use App\RealCalendarContext\Domain\DomainEvent;
+use App\Shared\Domain\AbstractDomainEvent;
+use App\Shared\Domain\AggregateId;
+use App\Shared\Domain\DomainEvent;
 
 class SlotWasRemoved extends AbstractDomainEvent
 {
@@ -36,7 +36,7 @@ class SlotWasRemoved extends AbstractDomainEvent
         ];
     }
 
-    public static function deserialize(array $serialized): DomainEvent
+    public static function deserialize(array $serialized): static
     {
         return new self(
             new AggregateId($serialized['aggregate_id']),
