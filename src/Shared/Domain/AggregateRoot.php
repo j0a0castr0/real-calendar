@@ -2,6 +2,8 @@
 
 namespace App\Shared\Domain;
 
+use App\WywaContext\Domain\DemandId;
+
 abstract class AggregateRoot
 {
     protected AggregateId $id;
@@ -22,7 +24,7 @@ abstract class AggregateRoot
     }
 
     /** Reconstitution from history */
-    public static function reconstitute(AggregateId $id, iterable $events): self
+    public static function reconstitute(AggregateId $id, iterable $events): static
     {
         $refClass = new \ReflectionClass(static::class);
         $instance = $refClass->newInstanceWithoutConstructor();
@@ -34,6 +36,18 @@ abstract class AggregateRoot
 
         return $instance;
     }
+
+    final public function withEvents(array $events): self
+    {
+        $copy = clone $this;
+
+        foreach ($events as $event) {
+            $copy->raise($event);
+        }
+
+        return $copy;
+    }
+
 
     /** Record new event */
     protected function raise(DomainEvent $event): void
@@ -70,5 +84,10 @@ abstract class AggregateRoot
 
         $this->$method($event);
         $this->version++;
+    }
+
+    public function __clone(): void
+    {
+        $this->recordedEvents = [];
     }
 }
