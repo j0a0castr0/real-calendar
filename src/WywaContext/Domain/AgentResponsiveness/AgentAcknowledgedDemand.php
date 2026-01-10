@@ -6,7 +6,7 @@ use App\Shared\Domain\AbstractDomainEvent;
 use App\Shared\Domain\AggregateId;
 use App\WywaContext\Domain\Shared\DemandId;
 
-final class DemandAcknowledged extends AbstractDomainEvent
+final class AgentAcknowledgedDemand extends AbstractDomainEvent
 {
     public function __construct(
         AggregateId $id,

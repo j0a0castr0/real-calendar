@@ -7,7 +7,7 @@ use App\WywaContext\Domain\AgentResponsiveness\AgentResponsiveness;
 use App\WywaContext\Domain\AgentResponsiveness\AwayPeriodEnded;
 use App\WywaContext\Domain\AgentResponsiveness\AwayPeriodStarted;
 use App\WywaContext\Domain\AgentResponsiveness\Confidence;
-use App\WywaContext\Domain\AgentResponsiveness\DemandAcknowledged;
+use App\WywaContext\Domain\AgentResponsiveness\AgentAcknowledgedDemand;
 use App\WywaContext\Domain\Shared\DemandId;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -21,34 +21,34 @@ final class AgentResponsivenessTest extends TestCase
 
         $aggregate = AgentResponsiveness::reconstitute(new AggregateId(), $history);
 
-        $events = $aggregate->eventsForDemandAcknowledged(new DemandId('demand-id'), new \DateTimeImmutable());
+        $events = $aggregate->eventsForAgentAcknowledgedDemand(new DemandId('demand-id'), new \DateTimeImmutable());
         $this->assertNotEmpty($events);
-        $this->assertInstanceOf(DemandAcknowledged::class, $events[0]);
+        $this->assertInstanceOf(AgentAcknowledgedDemand::class, $events[0]);
 
         $aggregate = $aggregate->withEvents([
             ...$events
         ]);
 
         $this->assertNotEmpty($recordedEvents = $aggregate->popRecordedEvents());
-        $this->assertInstanceOf(DemandAcknowledged::class, $recordedEvents[0]);
+        $this->assertInstanceOf(AgentAcknowledgedDemand::class, $recordedEvents[0]);
     }
 
     #[Test]
     public function itShouldNotAcknowledgeDemandForAgentResponsivenessIfAlreadyAcknowledged(): void
     {
         $history = [
-            new DemandAcknowledged($id = new AggregateId(), new DemandId('demand-id'), new \DateTimeImmutable())
+            new AgentAcknowledgedDemand($id = new AggregateId(), new DemandId('demand-id'), new \DateTimeImmutable())
         ];
         $aggregate = AgentResponsiveness::reconstitute($id, $history);
 
-        $this->assertEmpty($aggregate->eventsForDemandAcknowledged(new DemandId('demand-id'), new \DateTimeImmutable()));
+        $this->assertEmpty($aggregate->eventsForAgentAcknowledgedDemand(new DemandId('demand-id'), new \DateTimeImmutable()));
     }
 
     #[Test]
     public function itShouldComputeConfidenceHighAfterDemandWasAcknowledged(): void
     {
         $aggregate = AgentResponsiveness::reconstitute($id = new AggregateId(), [
-            new DemandAcknowledged($id, new DemandId('demand-id'), new \DateTimeImmutable())
+            new AgentAcknowledgedDemand($id, new DemandId('demand-id'), new \DateTimeImmutable())
         ]);
 
         $this->assertEquals(Confidence::HIGH, $aggregate->confidenceAt(new \DateTimeImmutable()));
@@ -66,7 +66,7 @@ final class AgentResponsivenessTest extends TestCase
     public function itShouldStartAwayPeriod(): void
     {
         $aggregate = AgentResponsiveness::reconstitute($id = new AggregateId(), [
-            new DemandAcknowledged($id, new DemandId('demand-id'), new \DateTimeImmutable())
+            new AgentAcknowledgedDemand($id, new DemandId('demand-id'), new \DateTimeImmutable())
         ]);
 
         $events = $aggregate->eventsForStartAwayPeriod(new \DateTimeImmutable());
@@ -85,21 +85,22 @@ final class AgentResponsivenessTest extends TestCase
     public function itShouldComputeConfidenceLowIfIfAwayWindowStartedAfterAcknowledgingDemand(): void
     {
         $aggregate = AgentResponsiveness::reconstitute($id = new AggregateId(), [
-            new DemandAcknowledged($id, new DemandId('demand-id'), new \DateTimeImmutable())
+            new AgentAcknowledgedDemand($id, new DemandId('demand-id'), new \DateTimeImmutable())
         ]);
 
         $aggregate = $aggregate->withEvents([
             ...$aggregate->eventsForStartAwayPeriod(new \DateTimeImmutable())
         ]);
 
-        $this->assertEquals(Confidence::LOW, $aggregate->confidenceAt(new \DateTimeImmutable()));
+        $this->assertEquals(Confidence::LOW, $aggregate->confidenceAt($at = new \DateTimeImmutable()));
+        $this->assertTrue($aggregate->responsivenessSnapshot($at)->isConfidenceLow());
     }
 
     #[Test]
     public function itShouldEndAwayPeriod(): void
     {
         $aggregate = AgentResponsiveness::reconstitute($id = new AggregateId(), [
-            new DemandAcknowledged($id, new DemandId('demand-id'), new \DateTimeImmutable()),
+            new AgentAcknowledgedDemand($id, new DemandId('demand-id'), new \DateTimeImmutable()),
             new AwayPeriodStarted($id, new \DateTimeImmutable())
         ]);
 
@@ -119,12 +120,13 @@ final class AgentResponsivenessTest extends TestCase
     public function itShouldComputeConfidenceMediumIfAwayWindowJustEnded(): void
     {
         $aggregate = AgentResponsiveness::reconstitute($id = new AggregateId(), [
-            new DemandAcknowledged($id, new DemandId('demand-id'), new \DateTimeImmutable()),
+            new AgentAcknowledgedDemand($id, new DemandId('demand-id'), new \DateTimeImmutable()),
             new AwayPeriodStarted($id, new \DateTimeImmutable()),
             new AwayPeriodEnded($id, new \DateTimeImmutable())
         ]);
 
-        $this->assertEquals(Confidence::MEDIUM, $aggregate->confidenceAt(new \DateTimeImmutable()));
+        $this->assertEquals(Confidence::MEDIUM, $aggregate->confidenceAt($at = new \DateTimeImmutable()));
+        $this->assertTrue($aggregate->responsivenessSnapshot($at)->isConfidenceMediumOrHigh());
     }
 
     #[Test]
@@ -136,12 +138,13 @@ final class AgentResponsivenessTest extends TestCase
         $t3 = new \DateTimeImmutable('2026-01-10 10:03:00');
 
         $aggregate = AgentResponsiveness::reconstitute($id = new AggregateId(), [
-            new DemandAcknowledged($id, new DemandId('demand-id'), $t0),
+            new AgentAcknowledgedDemand($id, new DemandId('demand-id'), $t0),
             new AwayPeriodStarted($id, $t1),
             new AwayPeriodEnded($id, $t2),
-            new DemandAcknowledged($id, new DemandId('demand-id2'), $t3)
+            new AgentAcknowledgedDemand($id, new DemandId('demand-id2'), $t3)
         ]);
 
         $this->assertEquals(Confidence::HIGH, $aggregate->confidenceAt($t3));
+        $this->assertTrue($aggregate->responsivenessSnapshot($t3)->isConfidenceMediumOrHigh());
     }
 }

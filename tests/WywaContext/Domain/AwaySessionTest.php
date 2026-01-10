@@ -18,7 +18,7 @@ class AwaySessionTest extends TestCase
         $id = new AggregateId();
         $agg = AwaySession::reconstitute($id, []);
 
-        $events = $agg->eventsForCaptureDemand(new DemandId('demand-id'), 'leadreaference', new \DateTimeImmutable());
+        $events = $agg->eventsForCaptureDemand(new DemandId('demand-id'), new \DateTimeImmutable());
 
         self::assertEmpty($events);
     }
@@ -32,7 +32,7 @@ class AwaySessionTest extends TestCase
         ];
         $agg = AwaySession::reconstitute($id, $history);
 
-        $events = $agg->eventsForCaptureDemand(new DemandId('demand-id'), 'leadreaference', new \DateTimeImmutable());
+        $events = $agg->eventsForCaptureDemand(new DemandId('demand-id'),  new \DateTimeImmutable());
         self::assertCount(1, $events);
         self::assertInstanceOf(DemandCaptured::class, $events[0]);
 
@@ -47,19 +47,16 @@ class AwaySessionTest extends TestCase
     public function itShouldNotCaptureTwiceSameDemandForSameAwaySession() : void
     {
         $id = new AggregateId();
-        $history = [
-            new AwaySessionStarted($id, new \DateTimeImmutable())
-        ];
-        $agg = AwaySession::reconstitute($id, $history);
+        $agg = AwaySession::reconstitute($id, [
+            new AwaySessionStarted($id, new \DateTimeImmutable()),
+        ]);
 
-        $events = $agg->eventsForCaptureDemand(new DemandId('demand-id'), 'leadreaference', new \DateTimeImmutable());
-        $agg = $agg->withEvents($events);
+        $events1 = $agg->eventsForCaptureDemand(new DemandId('demand-id'), new \DateTimeImmutable());
+        $agg = $agg->withEvents($events1);
+        self::assertCount(1, $agg->popRecordedEvents());
 
-        $events2 = $agg->eventsForCaptureDemand(new DemandId('demand-id'), 'leadreaference', new \DateTimeImmutable());
+        $events2 = $agg->eventsForCaptureDemand(new DemandId('demand-id'), new \DateTimeImmutable());
         $agg = $agg->withEvents($events2);
-
-
-        $recordedEvents = $agg->popRecordedEvents();
-        self::assertCount(1, $recordedEvents);
+        self::assertCount(0, $agg->popRecordedEvents());
     }
 }

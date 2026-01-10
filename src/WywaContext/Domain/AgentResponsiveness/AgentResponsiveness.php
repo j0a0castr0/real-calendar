@@ -17,18 +17,25 @@ final class AgentResponsiveness extends AggregateRoot
     /**
      * @return DomainEvent[]
      */
-    public function eventsForDemandAcknowledged(DemandId $demandId, \DateTimeImmutable $at): array
+    public function eventsForAgentAcknowledgedDemand(DemandId $demandId, \DateTimeImmutable $at): array
     {
         if (isset($this->demandsAcknowledged[(string) $demandId])) return [];
-        return [new DemandAcknowledged($this->id, (string) $demandId, $at)];
+        return [new AgentAcknowledgedDemand($this->id, (string) $demandId, $at)];
     }
 
-    public function applyDemandAcknowledged(DemandAcknowledged $event) : void
+    public function applyAgentAcknowledgedDemand(AgentAcknowledgedDemand $event) : void
     {
         $this->demandsAcknowledged[(string) $event->demandId()] = true;
         $this->lastAcknowledgedAt = $event->occurredAt();
     }
 
+    public function responsivenessSnapshot(\DateTimeImmutable $at): ResponsivenessSnapshot
+    {
+        return new ResponsivenessSnapshot(
+            $this->confidenceAt($at),
+            $at
+        );
+    }
     public function confidenceAt(\DateTimeImmutable $at) : Confidence
     {
         $away = new AwayPeriod($this->awayPeriodStartedAt, $this->awayPeriodEndedAt);

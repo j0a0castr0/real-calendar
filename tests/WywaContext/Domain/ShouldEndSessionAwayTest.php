@@ -2,8 +2,8 @@
 
 namespace App\Tests\WywaContext\Domain;
 
-use App\WywaContext\Domain\AwaySession\ResponsivenessConfidence;
-use App\WywaContext\Domain\AwaySession\ResponsivenessSnapshot;
+use App\WywaContext\Domain\AgentResponsiveness\Confidence;
+use App\WywaContext\Domain\AgentResponsiveness\ResponsivenessSnapshot;
 use App\WywaContext\Domain\AwaySession\ShouldAwaySessionEnd;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ class ShouldEndSessionAwayTest extends TestCase
         $policyDecision = new ShouldAwaySessionEnd();
 
         $this->assertTrue($policyDecision->decide(
-            new ResponsivenessSnapshot(ResponsivenessConfidence::HIGH, new \DateTimeImmutable())
+            new ResponsivenessSnapshot(Confidence::HIGH, new \DateTimeImmutable())
         ));
     }
 
@@ -26,7 +26,7 @@ class ShouldEndSessionAwayTest extends TestCase
         $policyDecision = new ShouldAwaySessionEnd();
 
         $this->assertTrue($policyDecision->decide(
-            new ResponsivenessSnapshot(ResponsivenessConfidence::MEDIUM, new \DateTimeImmutable())
+            new ResponsivenessSnapshot(Confidence::MEDIUM, new \DateTimeImmutable())
         ));
     }
 
@@ -36,7 +36,7 @@ class ShouldEndSessionAwayTest extends TestCase
         $policyDecision = new ShouldAwaySessionEnd();
 
         $this->assertFalse($policyDecision->decide(
-            new ResponsivenessSnapshot(ResponsivenessConfidence::LOW, new \DateTimeImmutable())
+            new ResponsivenessSnapshot(Confidence::LOW, new \DateTimeImmutable())
         ));
     }
 }
