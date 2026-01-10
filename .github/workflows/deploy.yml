@@ -9,6 +9,7 @@ on:
 
 jobs:
     deploy-app:
+        if: false
         runs-on: ubuntu-latest
         environment: production
 
