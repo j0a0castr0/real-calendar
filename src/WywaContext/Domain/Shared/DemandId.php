@@ -1,6 +1,6 @@
 <?php
 
-namespace App\WywaContext\Domain;
+namespace App\WywaContext\Domain\Shared;
 
 final class DemandId
 {

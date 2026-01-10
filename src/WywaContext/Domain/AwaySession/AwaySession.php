@@ -1,8 +1,9 @@
 <?php
 
-namespace App\WywaContext\Domain;
+namespace App\WywaContext\Domain\AwaySession;
 
 use App\Shared\Domain\AggregateRoot;
+use App\WywaContext\Domain\Shared\DemandId;
 
 final class AwaySession extends AggregateRoot
 {

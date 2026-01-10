@@ -2,8 +2,6 @@
 
 namespace App\Shared\Domain;
 
-use App\WywaContext\Domain\DemandId;
-
 abstract class AggregateRoot
 {
     protected AggregateId $id;

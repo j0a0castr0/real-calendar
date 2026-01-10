@@ -3,9 +3,9 @@
 namespace App\Tests\WywaContext\Domain;
 
 use App\Shared\Domain\AggregateId;
-use App\WywaContext\Domain\AwaySession;
-use App\WywaContext\Domain\AwaySessionEnded;
-use App\WywaContext\Domain\AwaySessionStarted;
+use App\WywaContext\Domain\AwaySession\AwaySession;
+use App\WywaContext\Domain\AwaySession\AwaySessionEnded;
+use App\WywaContext\Domain\AwaySession\AwaySessionStarted;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

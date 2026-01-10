@@ -1,14 +1,13 @@
 <?php
 
-namespace App\WywaContext\Domain;
+namespace App\WywaContext\Domain\AwaySession;
 
 use App\Shared\Domain\AbstractDomainEvent;
 use App\Shared\Domain\AggregateId;
 
-final class AwaySessionStarted extends AbstractDomainEvent
+final class AwaySessionEnded extends AbstractDomainEvent
 {
-
-    public function __construct(private readonly AggregateId $id, private readonly \DateTimeImmutable $startedAt)
+    public function __construct(private readonly AggregateId $id, private readonly \DateTimeImmutable $endedAt)
     {
     }
 

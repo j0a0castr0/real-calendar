@@ -1,16 +1,11 @@
 <?php
 
-namespace App\WywaContext\Domain;
+namespace App\WywaContext\Domain\AgentResponsiveness;
 
 use App\Shared\Domain\AbstractDomainEvent;
-use App\Shared\Domain\AggregateId;
 
-final class AwaySessionEnded extends AbstractDomainEvent
+final class AwayPeriodEnded extends AbstractDomainEvent
 {
-    public function __construct(private readonly AggregateId $id, private readonly \DateTimeImmutable $endedAt)
-    {
-    }
-
     public function serialize(): array
     {
         // TODO: Implement serialize() method.

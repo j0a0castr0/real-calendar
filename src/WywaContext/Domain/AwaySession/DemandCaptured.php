@@ -1,6 +1,6 @@
 <?php
 
-namespace App\WywaContext\Domain;
+namespace App\WywaContext\Domain\AwaySession;
 
 use App\Shared\Domain\AbstractDomainEvent;
 use App\Shared\Domain\AggregateId;

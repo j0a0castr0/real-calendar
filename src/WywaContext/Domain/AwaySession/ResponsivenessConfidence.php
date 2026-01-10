@@ -1,8 +1,8 @@
 <?php
 
-namespace App\WywaContext\Domain;
+namespace App\WywaContext\Domain\AwaySession;
 
-enum CommitmentConfidence: string
+enum ResponsivenessConfidence: string
 {
     case HIGH = 'high';
     case LOW = 'low';
